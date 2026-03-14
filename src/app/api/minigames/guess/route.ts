@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { selectRandomCard, generateMultipleChoiceOptions } from '@/lib/minigame-engine';
 import { getUserFromRequest } from '@/lib/auth';
+import { Card } from '@/types';
 
 export async function GET(request: NextRequest) {
   try {
@@ -18,6 +19,12 @@ export async function GET(request: NextRequest) {
         imageUrl: true,
         rarity: true,
         type: true,
+        packId: true,
+        cardNumber: true,
+        hp: true,
+        flavorText: true,
+        weight: true,
+        createdAt: true,
       },
     });
 
@@ -25,11 +32,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'No cards available' }, { status: 404 });
     }
 
+    // Cast to Card[] type
+    const cards = allCards as Card[];
+
     // Select a random card for the challenge
-    const correctCard = selectRandomCard(allCards, true);
+    const correctCard = selectRandomCard(cards, true);
 
     // Generate multiple choice options
-    const options = generateMultipleChoiceOptions(correctCard, allCards, 4);
+    const options = generateMultipleChoiceOptions(correctCard, cards, 4);
 
     return NextResponse.json({
       cardId: correctCard.id,

@@ -50,6 +50,10 @@ export async function getSessionUser(request: NextRequest): Promise<User | null>
   return user as User;
 }
 
+export async function getUserFromRequest(request: NextRequest): Promise<User | null> {
+  return getSessionUser(request);
+}
+
 export async function deleteSession(token: string): Promise<void> {
   await prisma.session.deleteMany({ where: { token } });
 }

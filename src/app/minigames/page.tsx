@@ -64,26 +64,48 @@ export default function MinigamesPage() {
               </div>
             </Link>
 
-            {/* Placeholder for future minigames */}
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden opacity-60">
-              <div className="bg-gradient-to-br from-gray-400 to-gray-500 p-8 text-white">
-                <div className="text-6xl mb-4">🎯</div>
-                <h2 className="text-2xl font-bold mb-2">
-                  More Games Coming Soon!
-                </h2>
-                <p className="text-gray-100">
-                  Stay tuned for more ways to earn credits
-                </p>
+            {/* Guess That Pokémon Game Card */}
+            <Link href="/minigames/guess">
+              <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer group">
+                <div className="bg-gradient-to-br from-green-500 to-teal-600 p-8 text-white">
+                  <div className="text-6xl mb-4 group-hover:scale-110 transition-transform">
+                    🎯
+                  </div>
+                  <h2 className="text-2xl font-bold mb-2">
+                    Guess That Pokémon!
+                  </h2>
+                  <p className="text-green-100">
+                    Identify Pokémon from their images
+                  </p>
+                </div>
+                
+                <div className="p-6">
+                  <div className="mb-4">
+                    <h3 className="font-semibold text-gray-800 mb-2">How to Play:</h3>
+                    <ul className="text-sm text-gray-600 space-y-1">
+                      <li>• View a Pokémon card image</li>
+                      <li>• Choose the correct name from 4 options</li>
+                      <li>• Answer within 10 seconds</li>
+                    </ul>
+                  </div>
+
+                  <div className="mb-4">
+                    <h3 className="font-semibold text-gray-800 mb-2">Rewards:</h3>
+                    <ul className="text-sm text-gray-600 space-y-1">
+                      <li>⚡ 0-3 seconds: <span className="font-bold text-green-600">100 Credits</span></li>
+                      <li>🏃 3-7 seconds: <span className="font-bold text-yellow-600">50 Credits</span></li>
+                      <li>🚶 7-10 seconds: <span className="font-bold text-orange-600">10 Credits</span></li>
+                    </ul>
+                  </div>
+
+                  <div className="mt-6">
+                    <div className="bg-green-600 text-white text-center py-3 rounded-lg font-semibold group-hover:bg-green-700 transition-colors">
+                      Play Now →
+                    </div>
+                  </div>
+                </div>
               </div>
-              
-              <div className="p-6">
-                <p className="text-gray-600 text-center">
-                  We're working on exciting new minigames.
-                  <br />
-                  Check back soon!
-                </p>
-              </div>
-            </div>
+            </Link>
           </div>
 
           <div className="mt-12 text-center">

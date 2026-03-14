@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { getSessionUser } from '@/lib/auth';
 import { collectionQuerySchema } from '@/utils/validation';
 import { successResponse, errorResponse } from '@/utils/response';

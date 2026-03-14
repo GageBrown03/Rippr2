@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import { NextRequest } from 'next/server';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import type { User } from '@/types';
 import crypto from 'crypto';
 

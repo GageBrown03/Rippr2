@@ -2,101 +2,335 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-const POKEMON_TYPES = ['Fire', 'Water', 'Grass', 'Electric', 'Psychic', 'Fighting', 'Dark', 'Steel', 'Fairy', 'Dragon', 'Normal', 'Ice', 'Ghost', 'Poison'];
-
 const PACKS = [
-  { name: 'Base Set', setName: 'Base Set', description: 'The original Pokémon card set that started it all!', cost: 200, imageUrl: 'https://via.placeholder.com/300x400?text=Base+Set' },
-  { name: 'Jungle', setName: 'Jungle', description: 'Explore the wild jungle and discover rare Pokémon!', cost: 200, imageUrl: 'https://via.placeholder.com/300x400?text=Jungle' },
-  { name: 'Fossil', setName: 'Fossil', description: 'Unearth ancient Pokémon from the depths of time!', cost: 250, imageUrl: 'https://via.placeholder.com/300x400?text=Fossil' },
-  { name: 'Team Rocket', setName: 'Team Rocket', description: 'Dark Pokémon from the nefarious Team Rocket!', cost: 300, imageUrl: 'https://via.placeholder.com/300x400?text=Team+Rocket' },
-  { name: 'Gym Heroes', setName: 'Gym Heroes', description: 'Battle alongside Gym Leaders and their signature Pokémon!', cost: 350, imageUrl: 'https://via.placeholder.com/300x400?text=Gym+Heroes' },
+  {
+    name: 'Base Set',
+    setName: 'Base Set',
+    description: 'The original Pokémon TCG set that started it all in 1999!',
+    cost: 200,
+    imageUrl: 'https://images.pokemontcg.io/base1/logo.png',
+    cards: [
+      // Holo Rares
+      { name: 'Charizard', cardNumber: '4/102', rarity: 'Holo Rare', type: 'Fire', hp: 120, imageUrl: 'https://images.pokemontcg.io/base1/4_hires.png', weight: 0.01 },
+      { name: 'Blastoise', cardNumber: '2/102', rarity: 'Holo Rare', type: 'Water', hp: 100, imageUrl: 'https://images.pokemontcg.io/base1/2_hires.png', weight: 0.01 },
+      { name: 'Venusaur', cardNumber: '15/102', rarity: 'Holo Rare', type: 'Grass', hp: 100, imageUrl: 'https://images.pokemontcg.io/base1/15_hires.png', weight: 0.01 },
+      { name: 'Alakazam', cardNumber: '1/102', rarity: 'Holo Rare', type: 'Psychic', hp: 80, imageUrl: 'https://images.pokemontcg.io/base1/1_hires.png', weight: 0.01 },
+      { name: 'Chansey', cardNumber: '3/102', rarity: 'Holo Rare', type: 'Normal', hp: 120, imageUrl: 'https://images.pokemontcg.io/base1/3_hires.png', weight: 0.01 },
+      { name: 'Clefairy', cardNumber: '5/102', rarity: 'Holo Rare', type: 'Normal', hp: 40, imageUrl: 'https://images.pokemontcg.io/base1/5_hires.png', weight: 0.01 },
+      { name: 'Gyarados', cardNumber: '6/102', rarity: 'Holo Rare', type: 'Water', hp: 100, imageUrl: 'https://images.pokemontcg.io/base1/6_hires.png', weight: 0.01 },
+      { name: 'Hitmonchan', cardNumber: '7/102', rarity: 'Holo Rare', type: 'Fighting', hp: 70, imageUrl: 'https://images.pokemontcg.io/base1/7_hires.png', weight: 0.01 },
+      { name: 'Machamp', cardNumber: '8/102', rarity: 'Holo Rare', type: 'Fighting', hp: 100, imageUrl: 'https://images.pokemontcg.io/base1/8_hires.png', weight: 0.01 },
+      { name: 'Magneton', cardNumber: '9/102', rarity: 'Holo Rare', type: 'Electric', hp: 60, imageUrl: 'https://images.pokemontcg.io/base1/9_hires.png', weight: 0.01 },
+      { name: 'Mewtwo', cardNumber: '10/102', rarity: 'Holo Rare', type: 'Psychic', hp: 60, imageUrl: 'https://images.pokemontcg.io/base1/10_hires.png', weight: 0.01 },
+      { name: 'Nidoking', cardNumber: '11/102', rarity: 'Holo Rare', type: 'Grass', hp: 90, imageUrl: 'https://images.pokemontcg.io/base1/11_hires.png', weight: 0.01 },
+      { name: 'Ninetales', cardNumber: '12/102', rarity: 'Holo Rare', type: 'Fire', hp: 80, imageUrl: 'https://images.pokemontcg.io/base1/12_hires.png', weight: 0.01 },
+      { name: 'Poliwrath', cardNumber: '13/102', rarity: 'Holo Rare', type: 'Water', hp: 90, imageUrl: 'https://images.pokemontcg.io/base1/13_hires.png', weight: 0.01 },
+      { name: 'Raichu', cardNumber: '14/102', rarity: 'Holo Rare', type: 'Electric', hp: 80, imageUrl: 'https://images.pokemontcg.io/base1/14_hires.png', weight: 0.01 },
+      { name: 'Zapdos', cardNumber: '16/102', rarity: 'Holo Rare', type: 'Electric', hp: 90, imageUrl: 'https://images.pokemontcg.io/base1/16_hires.png', weight: 0.01 },
+      // Rares
+      { name: 'Beedrill', cardNumber: '17/102', rarity: 'Rare', type: 'Grass', hp: 80, imageUrl: 'https://images.pokemontcg.io/base1/17_hires.png', weight: 0.08 },
+      { name: 'Dragonair', cardNumber: '18/102', rarity: 'Rare', type: 'Normal', hp: 80, imageUrl: 'https://images.pokemontcg.io/base1/18_hires.png', weight: 0.08 },
+      { name: 'Dugtrio', cardNumber: '19/102', rarity: 'Rare', type: 'Fighting', hp: 70, imageUrl: 'https://images.pokemontcg.io/base1/19_hires.png', weight: 0.08 },
+      { name: 'Electabuzz', cardNumber: '20/102', rarity: 'Rare', type: 'Electric', hp: 65, imageUrl: 'https://images.pokemontcg.io/base1/20_hires.png', weight: 0.08 },
+      { name: 'Electrode', cardNumber: '21/102', rarity: 'Rare', type: 'Electric', hp: 80, imageUrl: 'https://images.pokemontcg.io/base1/21_hires.png', weight: 0.08 },
+      { name: 'Pidgeotto', cardNumber: '22/102', rarity: 'Rare', type: 'Normal', hp: 60, imageUrl: 'https://images.pokemontcg.io/base1/22_hires.png', weight: 0.08 },
+      // Uncommons
+      { name: 'Arcanine', cardNumber: '23/102', rarity: 'Uncommon', type: 'Fire', hp: 100, imageUrl: 'https://images.pokemontcg.io/base1/23_hires.png', weight: 0.25 },
+      { name: 'Charmeleon', cardNumber: '24/102', rarity: 'Uncommon', type: 'Fire', hp: 80, imageUrl: 'https://images.pokemontcg.io/base1/24_hires.png', weight: 0.25 },
+      { name: 'Dewgong', cardNumber: '25/102', rarity: 'Uncommon', type: 'Water', hp: 80, imageUrl: 'https://images.pokemontcg.io/base1/25_hires.png', weight: 0.25 },
+      { name: 'Dratini', cardNumber: '26/102', rarity: 'Uncommon', type: 'Normal', hp: 40, imageUrl: 'https://images.pokemontcg.io/base1/26_hires.png', weight: 0.25 },
+      { name: 'Farfetchd', cardNumber: '27/102', rarity: 'Uncommon', type: 'Normal', hp: 50, imageUrl: 'https://images.pokemontcg.io/base1/27_hires.png', weight: 0.25 },
+      { name: 'Growlithe', cardNumber: '28/102', rarity: 'Uncommon', type: 'Fire', hp: 60, imageUrl: 'https://images.pokemontcg.io/base1/28_hires.png', weight: 0.25 },
+      { name: 'Haunter', cardNumber: '29/102', rarity: 'Uncommon', type: 'Psychic', hp: 60, imageUrl: 'https://images.pokemontcg.io/base1/29_hires.png', weight: 0.25 },
+      { name: 'Ivysaur', cardNumber: '30/102', rarity: 'Uncommon', type: 'Grass', hp: 60, imageUrl: 'https://images.pokemontcg.io/base1/30_hires.png', weight: 0.25 },
+      { name: 'Jynx', cardNumber: '31/102', rarity: 'Uncommon', type: 'Psychic', hp: 70, imageUrl: 'https://images.pokemontcg.io/base1/31_hires.png', weight: 0.25 },
+      { name: 'Kadabra', cardNumber: '32/102', rarity: 'Uncommon', type: 'Psychic', hp: 60, imageUrl: 'https://images.pokemontcg.io/base1/32_hires.png', weight: 0.25 },
+      { name: 'Kakuna', cardNumber: '33/102', rarity: 'Uncommon', type: 'Grass', hp: 80, imageUrl: 'https://images.pokemontcg.io/base1/33_hires.png', weight: 0.25 },
+      { name: 'Machoke', cardNumber: '34/102', rarity: 'Uncommon', type: 'Fighting', hp: 80, imageUrl: 'https://images.pokemontcg.io/base1/34_hires.png', weight: 0.25 },
+      { name: 'Magikarp', cardNumber: '35/102', rarity: 'Uncommon', type: 'Water', hp: 30, imageUrl: 'https://images.pokemontcg.io/base1/35_hires.png', weight: 0.25 },
+      { name: 'Magmar', cardNumber: '36/102', rarity: 'Uncommon', type: 'Fire', hp: 50, imageUrl: 'https://images.pokemontcg.io/base1/36_hires.png', weight: 0.25 },
+      { name: 'Nidorino', cardNumber: '37/102', rarity: 'Uncommon', type: 'Grass', hp: 60, imageUrl: 'https://images.pokemontcg.io/base1/37_hires.png', weight: 0.25 },
+      { name: 'Poliwhirl', cardNumber: '38/102', rarity: 'Uncommon', type: 'Water', hp: 60, imageUrl: 'https://images.pokemontcg.io/base1/38_hires.png', weight: 0.25 },
+      { name: 'Porygon', cardNumber: '39/102', rarity: 'Uncommon', type: 'Normal', hp: 30, imageUrl: 'https://images.pokemontcg.io/base1/39_hires.png', weight: 0.25 },
+      { name: 'Raticate', cardNumber: '40/102', rarity: 'Uncommon', type: 'Normal', hp: 60, imageUrl: 'https://images.pokemontcg.io/base1/40_hires.png', weight: 0.25 },
+      { name: 'Seel', cardNumber: '41/102', rarity: 'Uncommon', type: 'Water', hp: 60, imageUrl: 'https://images.pokemontcg.io/base1/41_hires.png', weight: 0.25 },
+      { name: 'Wartortle', cardNumber: '42/102', rarity: 'Uncommon', type: 'Water', hp: 70, imageUrl: 'https://images.pokemontcg.io/base1/42_hires.png', weight: 0.25 },
+      // Commons
+      { name: 'Abra', cardNumber: '43/102', rarity: 'Common', type: 'Psychic', hp: 30, imageUrl: 'https://images.pokemontcg.io/base1/43_hires.png', weight: 1.0 },
+      { name: 'Bulbasaur', cardNumber: '44/102', rarity: 'Common', type: 'Grass', hp: 40, imageUrl: 'https://images.pokemontcg.io/base1/44_hires.png', weight: 1.0 },
+      { name: 'Caterpie', cardNumber: '45/102', rarity: 'Common', type: 'Grass', hp: 40, imageUrl: 'https://images.pokemontcg.io/base1/45_hires.png', weight: 1.0 },
+      { name: 'Charmander', cardNumber: '46/102', rarity: 'Common', type: 'Fire', hp: 50, imageUrl: 'https://images.pokemontcg.io/base1/46_hires.png', weight: 1.0 },
+      { name: 'Diglett', cardNumber: '47/102', rarity: 'Common', type: 'Fighting', hp: 30, imageUrl: 'https://images.pokemontcg.io/base1/47_hires.png', weight: 1.0 },
+      { name: 'Doduo', cardNumber: '48/102', rarity: 'Common', type: 'Normal', hp: 50, imageUrl: 'https://images.pokemontcg.io/base1/48_hires.png', weight: 1.0 },
+      { name: 'Drowzee', cardNumber: '49/102', rarity: 'Common', type: 'Psychic', hp: 50, imageUrl: 'https://images.pokemontcg.io/base1/49_hires.png', weight: 1.0 },
+      { name: 'Gastly', cardNumber: '50/102', rarity: 'Common', type: 'Psychic', hp: 30, imageUrl: 'https://images.pokemontcg.io/base1/50_hires.png', weight: 1.0 },
+      { name: 'Koffing', cardNumber: '51/102', rarity: 'Common', type: 'Grass', hp: 50, imageUrl: 'https://images.pokemontcg.io/base1/51_hires.png', weight: 1.0 },
+      { name: 'Machop', cardNumber: '52/102', rarity: 'Common', type: 'Fighting', hp: 50, imageUrl: 'https://images.pokemontcg.io/base1/52_hires.png', weight: 1.0 },
+      { name: 'Magnemite', cardNumber: '53/102', rarity: 'Common', type: 'Electric', hp: 40, imageUrl: 'https://images.pokemontcg.io/base1/53_hires.png', weight: 1.0 },
+      { name: 'Metapod', cardNumber: '54/102', rarity: 'Common', type: 'Grass', hp: 70, imageUrl: 'https://images.pokemontcg.io/base1/54_hires.png', weight: 1.0 },
+      { name: 'Nidoran M', cardNumber: '55/102', rarity: 'Common', type: 'Grass', hp: 40, imageUrl: 'https://images.pokemontcg.io/base1/55_hires.png', weight: 1.0 },
+      { name: 'Onix', cardNumber: '56/102', rarity: 'Common', type: 'Fighting', hp: 90, imageUrl: 'https://images.pokemontcg.io/base1/56_hires.png', weight: 1.0 },
+      { name: 'Pidgey', cardNumber: '57/102', rarity: 'Common', type: 'Normal', hp: 40, imageUrl: 'https://images.pokemontcg.io/base1/57_hires.png', weight: 1.0 },
+      { name: 'Pikachu', cardNumber: '58/102', rarity: 'Common', type: 'Electric', hp: 40, imageUrl: 'https://images.pokemontcg.io/base1/58_hires.png', weight: 1.0 },
+      { name: 'Poliwag', cardNumber: '59/102', rarity: 'Common', type: 'Water', hp: 40, imageUrl: 'https://images.pokemontcg.io/base1/59_hires.png', weight: 1.0 },
+      { name: 'Ponyta', cardNumber: '60/102', rarity: 'Common', type: 'Fire', hp: 40, imageUrl: 'https://images.pokemontcg.io/base1/60_hires.png', weight: 1.0 },
+      { name: 'Rattata', cardNumber: '61/102', rarity: 'Common', type: 'Normal', hp: 30, imageUrl: 'https://images.pokemontcg.io/base1/61_hires.png', weight: 1.0 },
+      { name: 'Sandshrew', cardNumber: '62/102', rarity: 'Common', type: 'Fighting', hp: 40, imageUrl: 'https://images.pokemontcg.io/base1/62_hires.png', weight: 1.0 },
+      { name: 'Squirtle', cardNumber: '63/102', rarity: 'Common', type: 'Water', hp: 40, imageUrl: 'https://images.pokemontcg.io/base1/63_hires.png', weight: 1.0 },
+      { name: 'Starmie', cardNumber: '64/102', rarity: 'Common', type: 'Water', hp: 60, imageUrl: 'https://images.pokemontcg.io/base1/64_hires.png', weight: 1.0 },
+      { name: 'Staryu', cardNumber: '65/102', rarity: 'Common', type: 'Water', hp: 40, imageUrl: 'https://images.pokemontcg.io/base1/65_hires.png', weight: 1.0 },
+      { name: 'Tangela', cardNumber: '66/102', rarity: 'Common', type: 'Grass', hp: 50, imageUrl: 'https://images.pokemontcg.io/base1/66_hires.png', weight: 1.0 },
+      { name: 'Voltorb', cardNumber: '67/102', rarity: 'Common', type: 'Electric', hp: 40, imageUrl: 'https://images.pokemontcg.io/base1/67_hires.png', weight: 1.0 },
+      { name: 'Vulpix', cardNumber: '68/102', rarity: 'Common', type: 'Fire', hp: 50, imageUrl: 'https://images.pokemontcg.io/base1/68_hires.png', weight: 1.0 },
+      { name: 'Weedle', cardNumber: '69/102', rarity: 'Common', type: 'Grass', hp: 40, imageUrl: 'https://images.pokemontcg.io/base1/69_hires.png', weight: 1.0 },
+    ],
+  },
+  {
+    name: 'Jungle',
+    setName: 'Jungle',
+    description: 'Explore the wild jungle and discover rare Pokémon from the second TCG expansion!',
+    cost: 200,
+    imageUrl: 'https://images.pokemontcg.io/base2/logo.png',
+    cards: [
+      // Holo Rares
+      { name: 'Clefable', cardNumber: '1/64', rarity: 'Holo Rare', type: 'Normal', hp: 70, imageUrl: 'https://images.pokemontcg.io/base2/1_hires.png', weight: 0.01 },
+      { name: 'Electrode', cardNumber: '2/64', rarity: 'Holo Rare', type: 'Electric', hp: 80, imageUrl: 'https://images.pokemontcg.io/base2/2_hires.png', weight: 0.01 },
+      { name: 'Flareon', cardNumber: '3/64', rarity: 'Holo Rare', type: 'Fire', hp: 70, imageUrl: 'https://images.pokemontcg.io/base2/3_hires.png', weight: 0.01 },
+      { name: 'Jolteon', cardNumber: '4/64', rarity: 'Holo Rare', type: 'Electric', hp: 70, imageUrl: 'https://images.pokemontcg.io/base2/4_hires.png', weight: 0.01 },
+      { name: 'Kangaskhan', cardNumber: '5/64', rarity: 'Holo Rare', type: 'Normal', hp: 90, imageUrl: 'https://images.pokemontcg.io/base2/5_hires.png', weight: 0.01 },
+      { name: 'Mr. Mime', cardNumber: '6/64', rarity: 'Holo Rare', type: 'Psychic', hp: 40, imageUrl: 'https://images.pokemontcg.io/base2/6_hires.png', weight: 0.01 },
+      { name: 'Nidoqueen', cardNumber: '7/64', rarity: 'Holo Rare', type: 'Grass', hp: 90, imageUrl: 'https://images.pokemontcg.io/base2/7_hires.png', weight: 0.01 },
+      { name: 'Pidgeot', cardNumber: '8/64', rarity: 'Holo Rare', type: 'Normal', hp: 80, imageUrl: 'https://images.pokemontcg.io/base2/8_hires.png', weight: 0.01 },
+      { name: 'Pinsir', cardNumber: '9/64', rarity: 'Holo Rare', type: 'Grass', hp: 60, imageUrl: 'https://images.pokemontcg.io/base2/9_hires.png', weight: 0.01 },
+      { name: 'Scyther', cardNumber: '10/64', rarity: 'Holo Rare', type: 'Grass', hp: 70, imageUrl: 'https://images.pokemontcg.io/base2/10_hires.png', weight: 0.01 },
+      { name: 'Snorlax', cardNumber: '11/64', rarity: 'Holo Rare', type: 'Normal', hp: 90, imageUrl: 'https://images.pokemontcg.io/base2/11_hires.png', weight: 0.01 },
+      { name: 'Vaporeon', cardNumber: '12/64', rarity: 'Holo Rare', type: 'Water', hp: 80, imageUrl: 'https://images.pokemontcg.io/base2/12_hires.png', weight: 0.01 },
+      { name: 'Venomoth', cardNumber: '13/64', rarity: 'Holo Rare', type: 'Grass', hp: 70, imageUrl: 'https://images.pokemontcg.io/base2/13_hires.png', weight: 0.01 },
+      { name: 'Victreebel', cardNumber: '14/64', rarity: 'Holo Rare', type: 'Grass', hp: 80, imageUrl: 'https://images.pokemontcg.io/base2/14_hires.png', weight: 0.01 },
+      { name: 'Vileplume', cardNumber: '15/64', rarity: 'Holo Rare', type: 'Grass', hp: 80, imageUrl: 'https://images.pokemontcg.io/base2/15_hires.png', weight: 0.01 },
+      { name: 'Wigglytuff', cardNumber: '16/64', rarity: 'Holo Rare', type: 'Normal', hp: 80, imageUrl: 'https://images.pokemontcg.io/base2/16_hires.png', weight: 0.01 },
+      // Rares
+      { name: 'Butterfree', cardNumber: '17/64', rarity: 'Rare', type: 'Grass', hp: 70, imageUrl: 'https://images.pokemontcg.io/base2/17_hires.png', weight: 0.08 },
+      { name: 'Dodrio', cardNumber: '18/64', rarity: 'Rare', type: 'Normal', hp: 70, imageUrl: 'https://images.pokemontcg.io/base2/18_hires.png', weight: 0.08 },
+      { name: 'Exeggutor', cardNumber: '19/64', rarity: 'Rare', type: 'Grass', hp: 80, imageUrl: 'https://images.pokemontcg.io/base2/19_hires.png', weight: 0.08 },
+      { name: 'Fearow', cardNumber: '20/64', rarity: 'Rare', type: 'Normal', hp: 70, imageUrl: 'https://images.pokemontcg.io/base2/20_hires.png', weight: 0.08 },
+      { name: 'Gloom', cardNumber: '21/64', rarity: 'Rare', type: 'Grass', hp: 60, imageUrl: 'https://images.pokemontcg.io/base2/21_hires.png', weight: 0.08 },
+      { name: 'Lickitung', cardNumber: '22/64', rarity: 'Rare', type: 'Normal', hp: 90, imageUrl: 'https://images.pokemontcg.io/base2/22_hires.png', weight: 0.08 },
+      // Uncommons
+      { name: 'Marowak', cardNumber: '23/64', rarity: 'Uncommon', type: 'Fighting', hp: 60, imageUrl: 'https://images.pokemontcg.io/base2/23_hires.png', weight: 0.25 },
+      { name: 'Nidorina', cardNumber: '24/64', rarity: 'Uncommon', type: 'Grass', hp: 70, imageUrl: 'https://images.pokemontcg.io/base2/24_hires.png', weight: 0.25 },
+      { name: 'Parasect', cardNumber: '25/64', rarity: 'Uncommon', type: 'Grass', hp: 60, imageUrl: 'https://images.pokemontcg.io/base2/25_hires.png', weight: 0.25 },
+      { name: 'Persian', cardNumber: '26/64', rarity: 'Uncommon', type: 'Normal', hp: 70, imageUrl: 'https://images.pokemontcg.io/base2/26_hires.png', weight: 0.25 },
+      { name: 'Primeape', cardNumber: '27/64', rarity: 'Uncommon', type: 'Fighting', hp: 70, imageUrl: 'https://images.pokemontcg.io/base2/27_hires.png', weight: 0.25 },
+      { name: 'Rapidash', cardNumber: '28/64', rarity: 'Uncommon', type: 'Fire', hp: 70, imageUrl: 'https://images.pokemontcg.io/base2/28_hires.png', weight: 0.25 },
+      { name: 'Rhydon', cardNumber: '29/64', rarity: 'Uncommon', type: 'Fighting', hp: 100, imageUrl: 'https://images.pokemontcg.io/base2/29_hires.png', weight: 0.25 },
+      { name: 'Seaking', cardNumber: '30/64', rarity: 'Uncommon', type: 'Water', hp: 70, imageUrl: 'https://images.pokemontcg.io/base2/30_hires.png', weight: 0.25 },
+      { name: 'Tauros', cardNumber: '31/64', rarity: 'Uncommon', type: 'Normal', hp: 60, imageUrl: 'https://images.pokemontcg.io/base2/31_hires.png', weight: 0.25 },
+      { name: 'Weepinbell', cardNumber: '32/64', rarity: 'Uncommon', type: 'Grass', hp: 70, imageUrl: 'https://images.pokemontcg.io/base2/32_hires.png', weight: 0.25 },
+      // Commons
+      { name: 'Bellsprout', cardNumber: '33/64', rarity: 'Common', type: 'Grass', hp: 40, imageUrl: 'https://images.pokemontcg.io/base2/33_hires.png', weight: 1.0 },
+      { name: 'Cubone', cardNumber: '34/64', rarity: 'Common', type: 'Fighting', hp: 40, imageUrl: 'https://images.pokemontcg.io/base2/34_hires.png', weight: 1.0 },
+      { name: 'Eevee', cardNumber: '35/64', rarity: 'Common', type: 'Normal', hp: 50, imageUrl: 'https://images.pokemontcg.io/base2/35_hires.png', weight: 1.0 },
+      { name: 'Exeggcute', cardNumber: '36/64', rarity: 'Common', type: 'Grass', hp: 50, imageUrl: 'https://images.pokemontcg.io/base2/36_hires.png', weight: 1.0 },
+      { name: 'Goldeen', cardNumber: '37/64', rarity: 'Common', type: 'Water', hp: 40, imageUrl: 'https://images.pokemontcg.io/base2/37_hires.png', weight: 1.0 },
+      { name: 'Jigglypuff', cardNumber: '38/64', rarity: 'Common', type: 'Normal', hp: 60, imageUrl: 'https://images.pokemontcg.io/base2/38_hires.png', weight: 1.0 },
+      { name: 'Mankey', cardNumber: '39/64', rarity: 'Common', type: 'Fighting', hp: 30, imageUrl: 'https://images.pokemontcg.io/base2/39_hires.png', weight: 1.0 },
+      { name: 'Meowth', cardNumber: '40/64', rarity: 'Common', type: 'Normal', hp: 50, imageUrl: 'https://images.pokemontcg.io/base2/40_hires.png', weight: 1.0 },
+      { name: 'Nidoran F', cardNumber: '41/64', rarity: 'Common', type: 'Grass', hp: 50, imageUrl: 'https://images.pokemontcg.io/base2/41_hires.png', weight: 1.0 },
+      { name: 'Oddish', cardNumber: '42/64', rarity: 'Common', type: 'Grass', hp: 50, imageUrl: 'https://images.pokemontcg.io/base2/42_hires.png', weight: 1.0 },
+      { name: 'Paras', cardNumber: '43/64', rarity: 'Common', type: 'Grass', hp: 40, imageUrl: 'https://images.pokemontcg.io/base2/43_hires.png', weight: 1.0 },
+      { name: 'Pikachu', cardNumber: '44/64', rarity: 'Common', type: 'Electric', hp: 50, imageUrl: 'https://images.pokemontcg.io/base2/44_hires.png', weight: 1.0 },
+      { name: 'Rhyhorn', cardNumber: '45/64', rarity: 'Common', type: 'Fighting', hp: 70, imageUrl: 'https://images.pokemontcg.io/base2/45_hires.png', weight: 1.0 },
+      { name: 'Spearow', cardNumber: '46/64', rarity: 'Common', type: 'Normal', hp: 50, imageUrl: 'https://images.pokemontcg.io/base2/46_hires.png', weight: 1.0 },
+      { name: 'Venonat', cardNumber: '47/64', rarity: 'Common', type: 'Grass', hp: 40, imageUrl: 'https://images.pokemontcg.io/base2/47_hires.png', weight: 1.0 },
+    ],
+  },
+  {
+    name: 'Fossil',
+    setName: 'Fossil',
+    description: 'Unearth ancient Pokémon from the depths of time in this prehistoric expansion!',
+    cost: 250,
+    imageUrl: 'https://images.pokemontcg.io/base3/logo.png',
+    cards: [
+      // Holo Rares
+      { name: 'Aerodactyl', cardNumber: '1/62', rarity: 'Holo Rare', type: 'Fighting', hp: 60, imageUrl: 'https://images.pokemontcg.io/base3/1_hires.png', weight: 0.01 },
+      { name: 'Articuno', cardNumber: '2/62', rarity: 'Holo Rare', type: 'Water', hp: 70, imageUrl: 'https://images.pokemontcg.io/base3/2_hires.png', weight: 0.01 },
+      { name: 'Ditto', cardNumber: '3/62', rarity: 'Holo Rare', type: 'Normal', hp: 50, imageUrl: 'https://images.pokemontcg.io/base3/3_hires.png', weight: 0.01 },
+      { name: 'Dragonite', cardNumber: '4/62', rarity: 'Holo Rare', type: 'Normal', hp: 100, imageUrl: 'https://images.pokemontcg.io/base3/4_hires.png', weight: 0.01 },
+      { name: 'Gengar', cardNumber: '5/62', rarity: 'Holo Rare', type: 'Psychic', hp: 80, imageUrl: 'https://images.pokemontcg.io/base3/5_hires.png', weight: 0.01 },
+      { name: 'Haunter', cardNumber: '6/62', rarity: 'Holo Rare', type: 'Psychic', hp: 60, imageUrl: 'https://images.pokemontcg.io/base3/6_hires.png', weight: 0.01 },
+      { name: 'Hitmonlee', cardNumber: '7/62', rarity: 'Holo Rare', type: 'Fighting', hp: 60, imageUrl: 'https://images.pokemontcg.io/base3/7_hires.png', weight: 0.01 },
+      { name: 'Hypno', cardNumber: '8/62', rarity: 'Holo Rare', type: 'Psychic', hp: 90, imageUrl: 'https://images.pokemontcg.io/base3/8_hires.png', weight: 0.01 },
+      { name: 'Kabutops', cardNumber: '9/62', rarity: 'Holo Rare', type: 'Fighting', hp: 80, imageUrl: 'https://images.pokemontcg.io/base3/9_hires.png', weight: 0.01 },
+      { name: 'Lapras', cardNumber: '10/62', rarity: 'Holo Rare', type: 'Water', hp: 80, imageUrl: 'https://images.pokemontcg.io/base3/10_hires.png', weight: 0.01 },
+      { name: 'Magneton', cardNumber: '11/62', rarity: 'Holo Rare', type: 'Electric', hp: 60, imageUrl: 'https://images.pokemontcg.io/base3/11_hires.png', weight: 0.01 },
+      { name: 'Moltres', cardNumber: '12/62', rarity: 'Holo Rare', type: 'Fire', hp: 70, imageUrl: 'https://images.pokemontcg.io/base3/12_hires.png', weight: 0.01 },
+      { name: 'Muk', cardNumber: '13/62', rarity: 'Holo Rare', type: 'Grass', hp: 70, imageUrl: 'https://images.pokemontcg.io/base3/13_hires.png', weight: 0.01 },
+      { name: 'Raichu', cardNumber: '14/62', rarity: 'Holo Rare', type: 'Electric', hp: 80, imageUrl: 'https://images.pokemontcg.io/base3/14_hires.png', weight: 0.01 },
+      { name: 'Zapdos', cardNumber: '15/62', rarity: 'Holo Rare', type: 'Electric', hp: 90, imageUrl: 'https://images.pokemontcg.io/base3/15_hires.png', weight: 0.01 },
+      // Rares
+      { name: 'Arbok', cardNumber: '16/62', rarity: 'Rare', type: 'Grass', hp: 60, imageUrl: 'https://images.pokemontcg.io/base3/16_hires.png', weight: 0.08 },
+      { name: 'Cloyster', cardNumber: '17/62', rarity: 'Rare', type: 'Water', hp: 50, imageUrl: 'https://images.pokemontcg.io/base3/17_hires.png', weight: 0.08 },
+      { name: 'Gastly', cardNumber: '18/62', rarity: 'Rare', type: 'Psychic', hp: 50, imageUrl: 'https://images.pokemontcg.io/base3/18_hires.png', weight: 0.08 },
+      { name: 'Golbat', cardNumber: '19/62', rarity: 'Rare', type: 'Grass', hp: 60, imageUrl: 'https://images.pokemontcg.io/base3/19_hires.png', weight: 0.08 },
+      { name: 'Golduck', cardNumber: '20/62', rarity: 'Rare', type: 'Water', hp: 70, imageUrl: 'https://images.pokemontcg.io/base3/20_hires.png', weight: 0.08 },
+      { name: 'Golem', cardNumber: '21/62', rarity: 'Rare', type: 'Fighting', hp: 80, imageUrl: 'https://images.pokemontcg.io/base3/21_hires.png', weight: 0.08 },
+      // Uncommons
+      { name: 'Graveler', cardNumber: '22/62', rarity: 'Uncommon', type: 'Fighting', hp: 60, imageUrl: 'https://images.pokemontcg.io/base3/22_hires.png', weight: 0.25 },
+      { name: 'Kingler', cardNumber: '23/62', rarity: 'Uncommon', type: 'Water', hp: 60, imageUrl: 'https://images.pokemontcg.io/base3/23_hires.png', weight: 0.25 },
+      { name: 'Magmar', cardNumber: '24/62', rarity: 'Uncommon', type: 'Fire', hp: 50, imageUrl: 'https://images.pokemontcg.io/base3/24_hires.png', weight: 0.25 },
+      { name: 'Omastar', cardNumber: '25/62', rarity: 'Uncommon', type: 'Water', hp: 70, imageUrl: 'https://images.pokemontcg.io/base3/25_hires.png', weight: 0.25 },
+      { name: 'Sandslash', cardNumber: '26/62', rarity: 'Uncommon', type: 'Fighting', hp: 70, imageUrl: 'https://images.pokemontcg.io/base3/26_hires.png', weight: 0.25 },
+      { name: 'Seadra', cardNumber: '27/62', rarity: 'Uncommon', type: 'Water', hp: 60, imageUrl: 'https://images.pokemontcg.io/base3/27_hires.png', weight: 0.25 },
+      { name: 'Slowbro', cardNumber: '28/62', rarity: 'Uncommon', type: 'Psychic', hp: 60, imageUrl: 'https://images.pokemontcg.io/base3/28_hires.png', weight: 0.25 },
+      { name: 'Tentacruel', cardNumber: '29/62', rarity: 'Uncommon', type: 'Water', hp: 60, imageUrl: 'https://images.pokemontcg.io/base3/29_hires.png', weight: 0.25 },
+      { name: 'Weezing', cardNumber: '30/62', rarity: 'Uncommon', type: 'Grass', hp: 60, imageUrl: 'https://images.pokemontcg.io/base3/30_hires.png', weight: 0.25 },
+      // Commons
+      { name: 'Ekans', cardNumber: '31/62', rarity: 'Common', type: 'Grass', hp: 40, imageUrl: 'https://images.pokemontcg.io/base3/31_hires.png', weight: 1.0 },
+      { name: 'Geodude', cardNumber: '32/62', rarity: 'Common', type: 'Fighting', hp: 50, imageUrl: 'https://images.pokemontcg.io/base3/32_hires.png', weight: 1.0 },
+      { name: 'Grimer', cardNumber: '33/62', rarity: 'Common', type: 'Grass', hp: 50, imageUrl: 'https://images.pokemontcg.io/base3/33_hires.png', weight: 1.0 },
+      { name: 'Horsea', cardNumber: '34/62', rarity: 'Common', type: 'Water', hp: 40, imageUrl: 'https://images.pokemontcg.io/base3/34_hires.png', weight: 1.0 },
+      { name: 'Kabuto', cardNumber: '35/62', rarity: 'Common', type: 'Fighting', hp: 30, imageUrl: 'https://images.pokemontcg.io/base3/35_hires.png', weight: 1.0 },
+      { name: 'Krabby', cardNumber: '36/62', rarity: 'Common', type: 'Water', hp: 50, imageUrl: 'https://images.pokemontcg.io/base3/36_hires.png', weight: 1.0 },
+      { name: 'Omanyte', cardNumber: '37/62', rarity: 'Common', type: 'Water', hp: 40, imageUrl: 'https://images.pokemontcg.io/base3/37_hires.png', weight: 1.0 },
+      { name: 'Psyduck', cardNumber: '38/62', rarity: 'Common', type: 'Water', hp: 50, imageUrl: 'https://images.pokemontcg.io/base3/38_hires.png', weight: 1.0 },
+      { name: 'Shellder', cardNumber: '39/62', rarity: 'Common', type: 'Water', hp: 30, imageUrl: 'https://images.pokemontcg.io/base3/39_hires.png', weight: 1.0 },
+      { name: 'Slowpoke', cardNumber: '40/62', rarity: 'Common', type: 'Psychic', hp: 50, imageUrl: 'https://images.pokemontcg.io/base3/40_hires.png', weight: 1.0 },
+      { name: 'Tentacool', cardNumber: '41/62', rarity: 'Common', type: 'Water', hp: 30, imageUrl: 'https://images.pokemontcg.io/base3/41_hires.png', weight: 1.0 },
+      { name: 'Zubat', cardNumber: '42/62', rarity: 'Common', type: 'Grass', hp: 40, imageUrl: 'https://images.pokemontcg.io/base3/42_hires.png', weight: 1.0 },
+    ],
+  },
+  {
+    name: 'Team Rocket',
+    setName: 'Team Rocket',
+    description: 'Dark Pokémon from the nefarious Team Rocket organization!',
+    cost: 300,
+    imageUrl: 'https://images.pokemontcg.io/base4/logo.png',
+    cards: [
+      // Holo Rares
+      { name: 'Dark Alakazam', cardNumber: '1/82', rarity: 'Holo Rare', type: 'Psychic', hp: 60, imageUrl: 'https://images.pokemontcg.io/base4/1_hires.png', weight: 0.01 },
+      { name: 'Dark Arbok', cardNumber: '2/82', rarity: 'Holo Rare', type: 'Grass', hp: 60, imageUrl: 'https://images.pokemontcg.io/base4/2_hires.png', weight: 0.01 },
+      { name: 'Dark Blastoise', cardNumber: '3/82', rarity: 'Holo Rare', type: 'Water', hp: 70, imageUrl: 'https://images.pokemontcg.io/base4/3_hires.png', weight: 0.01 },
+      { name: 'Dark Charizard', cardNumber: '4/82', rarity: 'Holo Rare', type: 'Fire', hp: 120, imageUrl: 'https://images.pokemontcg.io/base4/4_hires.png', weight: 0.01 },
+      { name: 'Dark Dragonite', cardNumber: '5/82', rarity: 'Holo Rare', type: 'Normal', hp: 80, imageUrl: 'https://images.pokemontcg.io/base4/5_hires.png', weight: 0.01 },
+      { name: 'Dark Dugtrio', cardNumber: '6/82', rarity: 'Holo Rare', type: 'Fighting', hp: 50, imageUrl: 'https://images.pokemontcg.io/base4/6_hires.png', weight: 0.01 },
+      { name: 'Dark Golbat', cardNumber: '7/82', rarity: 'Holo Rare', type: 'Grass', hp: 50, imageUrl: 'https://images.pokemontcg.io/base4/7_hires.png', weight: 0.01 },
+      { name: 'Dark Gyarados', cardNumber: '8/82', rarity: 'Holo Rare', type: 'Water', hp: 70, imageUrl: 'https://images.pokemontcg.io/base4/8_hires.png', weight: 0.01 },
+      { name: 'Dark Hypno', cardNumber: '9/82', rarity: 'Holo Rare', type: 'Psychic', hp: 60, imageUrl: 'https://images.pokemontcg.io/base4/9_hires.png', weight: 0.01 },
+      { name: 'Dark Machamp', cardNumber: '10/82', rarity: 'Holo Rare', type: 'Fighting', hp: 80, imageUrl: 'https://images.pokemontcg.io/base4/10_hires.png', weight: 0.01 },
+      { name: 'Dark Magneton', cardNumber: '11/82', rarity: 'Holo Rare', type: 'Electric', hp: 60, imageUrl: 'https://images.pokemontcg.io/base4/11_hires.png', weight: 0.01 },
+      { name: 'Dark Slowbro', cardNumber: '12/82', rarity: 'Holo Rare', type: 'Psychic', hp: 60, imageUrl: 'https://images.pokemontcg.io/base4/12_hires.png', weight: 0.01 },
+      { name: 'Dark Vileplume', cardNumber: '13/82', rarity: 'Holo Rare', type: 'Grass', hp: 60, imageUrl: 'https://images.pokemontcg.io/base4/13_hires.png', weight: 0.01 },
+      { name: 'Dark Weezing', cardNumber: '14/82', rarity: 'Holo Rare', type: 'Grass', hp: 60, imageUrl: 'https://images.pokemontcg.io/base4/14_hires.png', weight: 0.01 },
+      // Rares
+      { name: 'Dark Charmeleon', cardNumber: '15/82', rarity: 'Rare', type: 'Fire', hp: 50, imageUrl: 'https://images.pokemontcg.io/base4/15_hires.png', weight: 0.08 },
+      { name: 'Dark Dragonair', cardNumber: '16/82', rarity: 'Rare', type: 'Normal', hp: 60, imageUrl: 'https://images.pokemontcg.io/base4/16_hires.png', weight: 0.08 },
+      { name: 'Dark Electrode', cardNumber: '17/82', rarity: 'Rare', type: 'Electric', hp: 70, imageUrl: 'https://images.pokemontcg.io/base4/17_hires.png', weight: 0.08 },
+      { name: 'Dark Flareon', cardNumber: '18/82', rarity: 'Rare', type: 'Fire', hp: 60, imageUrl: 'https://images.pokemontcg.io/base4/18_hires.png', weight: 0.08 },
+      { name: 'Dark Gloom', cardNumber: '19/82', rarity: 'Rare', type: 'Grass', hp: 50, imageUrl: 'https://images.pokemontcg.io/base4/19_hires.png', weight: 0.08 },
+      { name: 'Dark Golduck', cardNumber: '20/82', rarity: 'Rare', type: 'Water', hp: 60, imageUrl: 'https://images.pokemontcg.io/base4/20_hires.png', weight: 0.08 },
+      // Uncommons
+      { name: 'Dark Jolteon', cardNumber: '21/82', rarity: 'Uncommon', type: 'Electric', hp: 50, imageUrl: 'https://images.pokemontcg.io/base4/21_hires.png', weight: 0.25 },
+      { name: 'Dark Kadabra', cardNumber: '22/82', rarity: 'Uncommon', type: 'Psychic', hp: 50, imageUrl: 'https://images.pokemontcg.io/base4/22_hires.png', weight: 0.25 },
+      { name: 'Dark Machoke', cardNumber: '23/82', rarity: 'Uncommon', type: 'Fighting', hp: 60, imageUrl: 'https://images.pokemontcg.io/base4/23_hires.png', weight: 0.25 },
+      { name: 'Dark Muk', cardNumber: '24/82', rarity: 'Uncommon', type: 'Grass', hp: 60, imageUrl: 'https://images.pokemontcg.io/base4/24_hires.png', weight: 0.25 },
+      { name: 'Dark Persian', cardNumber: '25/82', rarity: 'Uncommon', type: 'Normal', hp: 60, imageUrl: 'https://images.pokemontcg.io/base4/25_hires.png', weight: 0.25 },
+      { name: 'Dark Primeape', cardNumber: '26/82', rarity: 'Uncommon', type: 'Fighting', hp: 60, imageUrl: 'https://images.pokemontcg.io/base4/26_hires.png', weight: 0.25 },
+      { name: 'Dark Rapidash', cardNumber: '27/82', rarity: 'Uncommon', type: 'Fire', hp: 60, imageUrl: 'https://images.pokemontcg.io/base4/27_hires.png', weight: 0.25 },
+      { name: 'Dark Vaporeon', cardNumber: '28/82', rarity: 'Uncommon', type: 'Water', hp: 60, imageUrl: 'https://images.pokemontcg.io/base4/28_hires.png', weight: 0.25 },
+      { name: 'Dark Wartortle', cardNumber: '29/82', rarity: 'Uncommon', type: 'Water', hp: 60, imageUrl: 'https://images.pokemontcg.io/base4/29_hires.png', weight: 0.25 },
+      // Commons
+      { name: 'Abra', cardNumber: '30/82', rarity: 'Common', type: 'Psychic', hp: 40, imageUrl: 'https://images.pokemontcg.io/base4/30_hires.png', weight: 1.0 },
+      { name: 'Charmander', cardNumber: '31/82', rarity: 'Common', type: 'Fire', hp: 50, imageUrl: 'https://images.pokemontcg.io/base4/31_hires.png', weight: 1.0 },
+      { name: 'Dark Raticate', cardNumber: '32/82', rarity: 'Common', type: 'Normal', hp: 50, imageUrl: 'https://images.pokemontcg.io/base4/32_hires.png', weight: 1.0 },
+      { name: 'Diglett', cardNumber: '33/82', rarity: 'Common', type: 'Fighting', hp: 30, imageUrl: 'https://images.pokemontcg.io/base4/33_hires.png', weight: 1.0 },
+      { name: 'Dratini', cardNumber: '34/82', rarity: 'Common', type: 'Normal', hp: 40, imageUrl: 'https://images.pokemontcg.io/base4/34_hires.png', weight: 1.0 },
+      { name: 'Drowzee', cardNumber: '35/82', rarity: 'Common', type: 'Psychic', hp: 50, imageUrl: 'https://images.pokemontcg.io/base4/35_hires.png', weight: 1.0 },
+      { name: 'Eevee', cardNumber: '36/82', rarity: 'Common', type: 'Normal', hp: 50, imageUrl: 'https://images.pokemontcg.io/base4/36_hires.png', weight: 1.0 },
+      { name: 'Ekans', cardNumber: '37/82', rarity: 'Common', type: 'Grass', hp: 40, imageUrl: 'https://images.pokemontcg.io/base4/37_hires.png', weight: 1.0 },
+      { name: 'Grimer', cardNumber: '38/82', rarity: 'Common', type: 'Grass', hp: 50, imageUrl: 'https://images.pokemontcg.io/base4/38_hires.png', weight: 1.0 },
+      { name: 'Koffing', cardNumber: '39/82', rarity: 'Common', type: 'Grass', hp: 50, imageUrl: 'https://images.pokemontcg.io/base4/39_hires.png', weight: 1.0 },
+      { name: 'Machop', cardNumber: '40/82', rarity: 'Common', type: 'Fighting', hp: 50, imageUrl: 'https://images.pokemontcg.io/base4/40_hires.png', weight: 1.0 },
+      { name: 'Magikarp', cardNumber: '41/82', rarity: 'Common', type: 'Water', hp: 30, imageUrl: 'https://images.pokemontcg.io/base4/41_hires.png', weight: 1.0 },
+      { name: 'Mankey', cardNumber: '42/82', rarity: 'Common', type: 'Fighting', hp: 30, imageUrl: 'https://images.pokemontcg.io/base4/42_hires.png', weight: 1.0 },
+      { name: 'Meowth', cardNumber: '43/82', rarity: 'Common', type: 'Normal', hp: 50, imageUrl: 'https://images.pokemontcg.io/base4/43_hires.png', weight: 1.0 },
+      { name: 'Oddish', cardNumber: '44/82', rarity: 'Common', type: 'Grass', hp: 50, imageUrl: 'https://images.pokemontcg.io/base4/44_hires.png', weight: 1.0 },
+      { name: 'Ponyta', cardNumber: '45/82', rarity: 'Common', type: 'Fire', hp: 40, imageUrl: 'https://images.pokemontcg.io/base4/45_hires.png', weight: 1.0 },
+      { name: 'Psyduck', cardNumber: '46/82', rarity: 'Common', type: 'Water', hp: 50, imageUrl: 'https://images.pokemontcg.io/base4/46_hires.png', weight: 1.0 },
+      { name: 'Rattata', cardNumber: '47/82', rarity: 'Common', type: 'Normal', hp: 30, imageUrl: 'https://images.pokemontcg.io/base4/47_hires.png', weight: 1.0 },
+      { name: 'Slowpoke', cardNumber: '48/82', rarity: 'Common', type: 'Psychic', hp: 50, imageUrl: 'https://images.pokemontcg.io/base4/48_hires.png', weight: 1.0 },
+      { name: 'Squirtle', cardNumber: '49/82', rarity: 'Common', type: 'Water', hp: 40, imageUrl: 'https://images.pokemontcg.io/base4/49_hires.png', weight: 1.0 },
+      { name: 'Voltorb', cardNumber: '50/82', rarity: 'Common', type: 'Electric', hp: 40, imageUrl: 'https://images.pokemontcg.io/base4/50_hires.png', weight: 1.0 },
+      { name: 'Zubat', cardNumber: '51/82', rarity: 'Common', type: 'Grass', hp: 40, imageUrl: 'https://images.pokemontcg.io/base4/51_hires.png', weight: 1.0 },
+    ],
+  },
+  {
+    name: 'Gym Heroes',
+    setName: 'Gym Heroes',
+    description: 'Battle alongside Gym Leaders and their signature Pokémon!',
+    cost: 350,
+    imageUrl: 'https://images.pokemontcg.io/gym1/logo.png',
+    cards: [
+      // Holo Rares
+      { name: "Blaine's Moltres", cardNumber: '1/132', rarity: 'Holo Rare', type: 'Fire', hp: 90, imageUrl: 'https://images.pokemontcg.io/gym1/1_hires.png', weight: 0.01 },
+      { name: "Brock's Rhydon", cardNumber: '2/132', rarity: 'Holo Rare', type: 'Fighting', hp: 80, imageUrl: 'https://images.pokemontcg.io/gym1/2_hires.png', weight: 0.01 },
+      { name: "Erika's Clefable", cardNumber: '3/132', rarity: 'Holo Rare', type: 'Normal', hp: 70, imageUrl: 'https://images.pokemontcg.io/gym1/3_hires.png', weight: 0.01 },
+      { name: "Erika's Dragonair", cardNumber: '4/132', rarity: 'Holo Rare', type: 'Normal', hp: 80, imageUrl: 'https://images.pokemontcg.io/gym1/4_hires.png', weight: 0.01 },
+      { name: "Erika's Vileplume", cardNumber: '5/132', rarity: 'Holo Rare', type: 'Grass', hp: 80, imageUrl: 'https://images.pokemontcg.io/gym1/5_hires.png', weight: 0.01 },
+      { name: "Lt. Surge's Electabuzz", cardNumber: '6/132', rarity: 'Holo Rare', type: 'Electric', hp: 70, imageUrl: 'https://images.pokemontcg.io/gym1/6_hires.png', weight: 0.01 },
+      { name: "Lt. Surge's Fearow", cardNumber: '7/132', rarity: 'Holo Rare', type: 'Normal', hp: 70, imageUrl: 'https://images.pokemontcg.io/gym1/7_hires.png', weight: 0.01 },
+      { name: "Lt. Surge's Magneton", cardNumber: '8/132', rarity: 'Holo Rare', type: 'Electric', hp: 80, imageUrl: 'https://images.pokemontcg.io/gym1/8_hires.png', weight: 0.01 },
+      { name: "Misty's Seadra", cardNumber: '9/132', rarity: 'Holo Rare', type: 'Water', hp: 70, imageUrl: 'https://images.pokemontcg.io/gym1/9_hires.png', weight: 0.01 },
+      { name: "Misty's Tentacruel", cardNumber: '10/132', rarity: 'Holo Rare', type: 'Water', hp: 70, imageUrl: 'https://images.pokemontcg.io/gym1/10_hires.png', weight: 0.01 },
+      { name: "Rocket's Hitmonchan", cardNumber: '11/132', rarity: 'Holo Rare', type: 'Fighting', hp: 70, imageUrl: 'https://images.pokemontcg.io/gym1/11_hires.png', weight: 0.01 },
+      { name: "Rocket's Moltres", cardNumber: '12/132', rarity: 'Holo Rare', type: 'Fire', hp: 80, imageUrl: 'https://images.pokemontcg.io/gym1/12_hires.png', weight: 0.01 },
+      { name: "Rocket's Scyther", cardNumber: '13/132', rarity: 'Holo Rare', type: 'Grass', hp: 70, imageUrl: 'https://images.pokemontcg.io/gym1/13_hires.png', weight: 0.01 },
+      { name: "Sabrina's Alakazam", cardNumber: '14/132', rarity: 'Holo Rare', type: 'Psychic', hp: 80, imageUrl: 'https://images.pokemontcg.io/gym1/14_hires.png', weight: 0.01 },
+      { name: "Sabrina's Gengar", cardNumber: '15/132', rarity: 'Holo Rare', type: 'Psychic', hp: 80, imageUrl: 'https://images.pokemontcg.io/gym1/15_hires.png', weight: 0.01 },
+      // Rares
+      { name: "Blaine's Arcanine", cardNumber: '16/132', rarity: 'Rare', type: 'Fire', hp: 90, imageUrl: 'https://images.pokemontcg.io/gym1/16_hires.png', weight: 0.08 },
+      { name: "Blaine's Charizard", cardNumber: '17/132', rarity: 'Rare', type: 'Fire', hp: 100, imageUrl: 'https://images.pokemontcg.io/gym1/17_hires.png', weight: 0.08 },
+      { name: "Brock's Golem", cardNumber: '18/132', rarity: 'Rare', type: 'Fighting', hp: 80, imageUrl: 'https://images.pokemontcg.io/gym1/18_hires.png', weight: 0.08 },
+      { name: "Brock's Onix", cardNumber: '19/132', rarity: 'Rare', type: 'Fighting', hp: 90, imageUrl: 'https://images.pokemontcg.io/gym1/19_hires.png', weight: 0.08 },
+      { name: "Erika's Venusaur", cardNumber: '20/132', rarity: 'Rare', type: 'Grass', hp: 100, imageUrl: 'https://images.pokemontcg.io/gym1/20_hires.png', weight: 0.08 },
+      { name: "Misty's Cloyster", cardNumber: '21/132', rarity: 'Rare', type: 'Water', hp: 70, imageUrl: 'https://images.pokemontcg.io/gym1/21_hires.png', weight: 0.08 },
+      // Uncommons
+      { name: "Misty's Golduck", cardNumber: '22/132', rarity: 'Uncommon', type: 'Water', hp: 70, imageUrl: 'https://images.pokemontcg.io/gym1/22_hires.png', weight: 0.25 },
+      { name: "Misty's Poliwrath", cardNumber: '23/132', rarity: 'Uncommon', type: 'Water', hp: 90, imageUrl: 'https://images.pokemontcg.io/gym1/23_hires.png', weight: 0.25 },
+      { name: "Blaine's Ninetales", cardNumber: '24/132', rarity: 'Uncommon', type: 'Fire', hp: 80, imageUrl: 'https://images.pokemontcg.io/gym1/24_hires.png', weight: 0.25 },
+      { name: "Brock's Sandslash", cardNumber: '25/132', rarity: 'Uncommon', type: 'Fighting', hp: 70, imageUrl: 'https://images.pokemontcg.io/gym1/25_hires.png', weight: 0.25 },
+      { name: "Erika's Gloom", cardNumber: '26/132', rarity: 'Uncommon', type: 'Grass', hp: 60, imageUrl: 'https://images.pokemontcg.io/gym1/26_hires.png', weight: 0.25 },
+      { name: "Lt. Surge's Raichu", cardNumber: '27/132', rarity: 'Uncommon', type: 'Electric', hp: 80, imageUrl: 'https://images.pokemontcg.io/gym1/27_hires.png', weight: 0.25 },
+      { name: "Sabrina's Hypno", cardNumber: '28/132', rarity: 'Uncommon', type: 'Psychic', hp: 80, imageUrl: 'https://images.pokemontcg.io/gym1/28_hires.png', weight: 0.25 },
+      // Commons
+      { name: "Blaine's Growlithe", cardNumber: '29/132', rarity: 'Common', type: 'Fire', hp: 50, imageUrl: 'https://images.pokemontcg.io/gym1/29_hires.png', weight: 1.0 },
+      { name: "Blaine's Ponyta", cardNumber: '30/132', rarity: 'Common', type: 'Fire', hp: 50, imageUrl: 'https://images.pokemontcg.io/gym1/30_hires.png', weight: 1.0 },
+      { name: "Blaine's Vulpix", cardNumber: '31/132', rarity: 'Common', type: 'Fire', hp: 50, imageUrl: 'https://images.pokemontcg.io/gym1/31_hires.png', weight: 1.0 },
+      { name: "Brock's Geodude", cardNumber: '32/132', rarity: 'Common', type: 'Fighting', hp: 50, imageUrl: 'https://images.pokemontcg.io/gym1/32_hires.png', weight: 1.0 },
+      { name: "Brock's Mankey", cardNumber: '33/132', rarity: 'Common', type: 'Fighting', hp: 40, imageUrl: 'https://images.pokemontcg.io/gym1/33_hires.png', weight: 1.0 },
+      { name: "Brock's Vulpix", cardNumber: '34/132', rarity: 'Common', type: 'Fire', hp: 50, imageUrl: 'https://images.pokemontcg.io/gym1/34_hires.png', weight: 1.0 },
+      { name: "Brock's Zubat", cardNumber: '35/132', rarity: 'Common', type: 'Grass', hp: 40, imageUrl: 'https://images.pokemontcg.io/gym1/35_hires.png', weight: 1.0 },
+      { name: "Erika's Bellsprout", cardNumber: '36/132', rarity: 'Common', type: 'Grass', hp: 40, imageUrl: 'https://images.pokemontcg.io/gym1/36_hires.png', weight: 1.0 },
+      { name: "Erika's Oddish", cardNumber: '37/132', rarity: 'Common', type: 'Grass', hp: 50, imageUrl: 'https://images.pokemontcg.io/gym1/37_hires.png', weight: 1.0 },
+      { name: "Erika's Tangela", cardNumber: '38/132', rarity: 'Common', type: 'Grass', hp: 50, imageUrl: 'https://images.pokemontcg.io/gym1/38_hires.png', weight: 1.0 },
+      { name: "Lt. Surge's Pikachu", cardNumber: '39/132', rarity: 'Common', type: 'Electric', hp: 50, imageUrl: 'https://images.pokemontcg.io/gym1/39_hires.png', weight: 1.0 },
+      { name: "Lt. Surge's Voltorb", cardNumber: '40/132', rarity: 'Common', type: 'Electric', hp: 40, imageUrl: 'https://images.pokemontcg.io/gym1/40_hires.png', weight: 1.0 },
+      { name: "Misty's Horsea", cardNumber: '41/132', rarity: 'Common', type: 'Water', hp: 40, imageUrl: 'https://images.pokemontcg.io/gym1/41_hires.png', weight: 1.0 },
+      { name: "Misty's Poliwag", cardNumber: '42/132', rarity: 'Common', type: 'Water', hp: 50, imageUrl: 'https://images.pokemontcg.io/gym1/42_hires.png', weight: 1.0 },
+      { name: "Misty's Psyduck", cardNumber: '43/132', rarity: 'Common', type: 'Water', hp: 50, imageUrl: 'https://images.pokemontcg.io/gym1/43_hires.png', weight: 1.0 },
+      { name: "Misty's Seel", cardNumber: '44/132', rarity: 'Common', type: 'Water', hp: 60, imageUrl: 'https://images.pokemontcg.io/gym1/44_hires.png', weight: 1.0 },
+      { name: "Misty's Staryu", cardNumber: '45/132', rarity: 'Common', type: 'Water', hp: 40, imageUrl: 'https://images.pokemontcg.io/gym1/45_hires.png', weight: 1.0 },
+      { name: "Misty's Tentacool", cardNumber: '46/132', rarity: 'Common', type: 'Water', hp: 40, imageUrl: 'https://images.pokemontcg.io/gym1/46_hires.png', weight: 1.0 },
+      { name: "Sabrina's Abra", cardNumber: '47/132', rarity: 'Common', type: 'Psychic', hp: 40, imageUrl: 'https://images.pokemontcg.io/gym1/47_hires.png', weight: 1.0 },
+      { name: "Sabrina's Drowzee", cardNumber: '48/132', rarity: 'Common', type: 'Psychic', hp: 50, imageUrl: 'https://images.pokemontcg.io/gym1/48_hires.png', weight: 1.0 },
+      { name: "Sabrina's Gastly", cardNumber: '49/132', rarity: 'Common', type: 'Psychic', hp: 40, imageUrl: 'https://images.pokemontcg.io/gym1/49_hires.png', weight: 1.0 },
+      { name: "Sabrina's Mr. Mime", cardNumber: '50/132', rarity: 'Common', type: 'Psychic', hp: 50, imageUrl: 'https://images.pokemontcg.io/gym1/50_hires.png', weight: 1.0 },
+    ],
+  },
 ];
-
-const POKEMON_NAMES: Record<string, string[]> = {
-  'Base Set': [
-    'Charizard', 'Blastoise', 'Venusaur', 'Pikachu', 'Mewtwo', 'Alakazam', 'Gyarados', 'Ninetales', 'Poliwrath', 'Hitmonchan',
-    'Machamp', 'Nidoking', 'Clefairy', 'Chansey', 'Raichu', 'Magneton', 'Electrode', 'Arcanine', 'Dewgong', 'Pidgeotto',
-    'Raticate', 'Fearow', 'Sandslash', 'Nidorina', 'Nidorino', 'Vulpix', 'Jigglypuff', 'Zubat', 'Gloom', 'Parasect',
-    'Venomoth', 'Dugtrio', 'Primeape', 'Growlithe', 'Poliwhirl', 'Abra', 'Kadabra', 'Machop', 'Machoke', 'Bellsprout',
-    'Weepinbell', 'Tentacool', 'Geodude', 'Graveler', 'Ponyta', 'Rapidash', 'Slowpoke', 'Magnemite', 'Farfetchd', 'Doduo',
-    'Seel', 'Grimer', 'Gastly', 'Haunter', 'Drowzee', 'Krabby', 'Voltorb', 'Exeggcute', 'Cubone', 'Marowak',
-    'Tangela', 'Horsea', 'Goldeen', 'Staryu', 'Starmie', 'Magikarp', 'Ditto', 'Eevee', 'Porygon', 'Omanyte',
-    'Kabuto', 'Snorlax', 'Dratini', 'Dragonair', 'Dragonite', 'Bulbasaur', 'Charmander', 'Squirtle', 'Caterpie', 'Weedle'
-  ],
-  'Jungle': [
-    'Flareon', 'Jolteon', 'Vaporeon', 'Kangaskhan', 'Mr. Mime', 'Pinsir', 'Scyther', 'Snorlax', 'Vileplume', 'Victreebel',
-    'Wigglytuff', 'Clefable', 'Electrode', 'Exeggutor', 'Nidoqueen', 'Pidgeot', 'Persian', 'Primeape', 'Rapidash', 'Rhydon',
-    'Seaking', 'Tauros', 'Venomoth', 'Butterfree', 'Dodrio', 'Fearow', 'Gloom', 'Lickitung', 'Marowak', 'Nidorina',
-    'Parasect', 'Pikachu', 'Rhyhorn', 'Bellsprout', 'Cubone', 'Eevee', 'Exeggcute', 'Goldeen', 'Jigglypuff', 'Mankey',
-    'Meowth', 'Nidoran F', 'Nidoran M', 'Oddish', 'Paras', 'Pikachu', 'Ponyta', 'Spearow', 'Venonat', 'Vulpix',
-    'Abra', 'Drowzee', 'Gastly', 'Geodude', 'Grimer', 'Horsea', 'Krabby', 'Magikarp', 'Poliwag', 'Slowpoke',
-    'Staryu', 'Tentacool', 'Voltorb', 'Zubat', 'Caterpie', 'Weedle', 'Pidgey', 'Rattata', 'Sandshrew', 'Diglett',
-    'Machop', 'Tentacruel', 'Magneton', 'Dewgong', 'Cloyster', 'Gengar', 'Hypno', 'Kingler', 'Starmie', 'Ditto'
-  ],
-  'Fossil': [
-    'Aerodactyl', 'Articuno', 'Dragonite', 'Gengar', 'Haunter', 'Hitmonlee', 'Hypno', 'Kabutops', 'Lapras', 'Magneton',
-    'Moltres', 'Muk', 'Omastar', 'Raichu', 'Zapdos', 'Arbok', 'Cloyster', 'Gastly', 'Golbat', 'Golduck',
-    'Golem', 'Graveler', 'Kingler', 'Magmar', 'Omastar', 'Sandslash', 'Seadra', 'Slowbro', 'Tentacruel', 'Weezing',
-    'Ekans', 'Geodude', 'Grimer', 'Horsea', 'Kabuto', 'Krabby', 'Omanyte', 'Psyduck', 'Shellder', 'Slowpoke',
-    'Tentacool', 'Voltorb', 'Zubat', 'Ditto', 'Eevee', 'Exeggcute', 'Cubone', 'Drowzee', 'Gastly', 'Geodude',
-    'Grimer', 'Horsea', 'Krabby', 'Magikarp', 'Poliwag', 'Slowpoke', 'Staryu', 'Tentacool', 'Voltorb', 'Zubat',
-    'Pidgey', 'Rattata', 'Sandshrew', 'Diglett', 'Machop', 'Ponyta', 'Seel', 'Doduo', 'Farfetchd', 'Lickitung',
-    'Chansey', 'Kangaskhan', 'Mr. Mime', 'Jynx', 'Electabuzz', 'Pinsir', 'Tauros', 'Porygon', 'Snorlax', 'Dratini'
-  ],
-  'Team Rocket': [
-    'Dark Charizard', 'Dark Blastoise', 'Dark Dragonite', 'Dark Alakazam', 'Dark Arbok', 'Dark Dugtrio', 'Dark Golbat', 'Dark Gyarados', 'Dark Hypno', 'Dark Machamp',
-    'Dark Magneton', 'Dark Slowbro', 'Dark Vileplume', 'Dark Weezing', 'Rockets Sneak Attack', 'Dark Charmeleon', 'Dark Dragonair', 'Dark Electrode', 'Dark Flareon', 'Dark Gloom',
-    'Dark Golduck', 'Dark Jolteon', 'Dark Kadabra', 'Dark Machoke', 'Dark Muk', 'Dark Persian', 'Dark Primeape', 'Dark Rapidash', 'Dark Vaporeon', 'Dark Wartortle',
-    'Abra', 'Charmander', 'Dark Raticate', 'Diglett', 'Dratini', 'Drowzee', 'Eevee', 'Ekans', 'Grimer', 'Koffing',
-    'Machop', 'Magikarp', 'Mankey', 'Meowth', 'Oddish', 'Ponyta', 'Psyduck', 'Rattata', 'Slowpoke', 'Squirtle',
-    'Voltorb', 'Vulpix', 'Zubat', 'Bulbasaur', 'Caterpie', 'Cubone', 'Gastly', 'Geodude', 'Goldeen', 'Horsea',
-    'Jigglypuff', 'Krabby', 'Nidoran F', 'Nidoran M', 'Paras', 'Pidgey', 'Pikachu', 'Poliwag', 'Sandshrew', 'Seel',
-    'Shellder', 'Spearow', 'Staryu', 'Tentacool', 'Venonat', 'Weedle', 'Dark Ninetales', 'Dark Raichu', 'Dark Venusaur', 'Dark Gengar'
-  ],
-  'Gym Heroes': [
-    "Blaine's Moltres", "Erika's Venusaur", "Lt. Surge's Electabuzz", "Misty's Tentacruel", "Rocket's Hitmonchan", "Brock's Rhydon", "Erika's Clefable", "Lt. Surge's Fearow", "Misty's Goldeen", "Misty's Starmie",
-    "Rocket's Scyther", "Sabrina's Gengar", "Blaine's Arcanine", "Brock's Golem", "Brock's Onix", "Erika's Dragonair", "Erika's Vileplume", "Lt. Surge's Magneton", "Misty's Cloyster", "Misty's Golduck",
-    "Misty's Poliwrath", "Rocket's Mewtwo", "Sabrina's Alakazam", "Blaine's Charizard", "Brock's Sandslash", "Erika's Gloom", "Erika's Oddish", "Erika's Weepinbell", "Lt. Surge's Pikachu", "Lt. Surge's Voltorb",
-    "Misty's Horsea", "Misty's Poliwag", "Misty's Psyduck", "Misty's Seel", "Misty's Staryu", "Brock's Geodude", "Brock's Mankey", "Brock's Vulpix", "Brock's Zubat", "Blaine's Growlithe",
-    "Blaine's Ponyta", "Blaine's Vulpix", "Blaine's Charmander", "Blaine's Charmeleon", "Sabrina's Abra", "Sabrina's Drowzee", "Sabrina's Gastly", "Sabrina's Haunter", "Sabrina's Kadabra", "Sabrina's Mr. Mime",
-    "Rocket's Grimer", "Rocket's Koffing", "Rocket's Meowth", "Rocket's Ekans", "Rocket's Oddish", "Rocket's Zubat", "Lt. Surge's Rattata", "Lt. Surge's Spearow", "Erika's Bellsprout", "Erika's Tangela",
-    "Brock's Diglett", "Brock's Graveler", "Misty's Tentacool", "Misty's Magikarp", "Blaine's Magmar", "Blaine's Rapidash", "Sabrina's Jynx", "Sabrina's Slowbro", "Rocket's Machop", "Rocket's Cubone",
-    "Lt. Surge's Electrode", "Erika's Exeggcute", "Brock's Primeape", "Misty's Dewgong", "Blaine's Ninetales", "Sabrina's Hypno", "Rocket's Golbat", "Rocket's Muk", "Lt. Surge's Raichu", "Erika's Exeggutor"
-  ],
-};
-
-interface RarityConfig {
-  rarity: string;
-  count: number;
-  weight: number;
-}
-
-const RARITY_DISTRIBUTION: RarityConfig[] = [
-  { rarity: 'Common', count: 50, weight: 1.0 },
-  { rarity: 'Uncommon', count: 20, weight: 0.4 },
-  { rarity: 'Rare', count: 7, weight: 0.15 },
-  { rarity: 'Holo Rare', count: 2, weight: 0.05 },
-  { rarity: 'Ultra Rare', count: 1, weight: 0.01 },
-];
-
-function getRandomType(): string {
-  return POKEMON_TYPES[Math.floor(Math.random() * POKEMON_TYPES.length)];
-}
-
-function getRandomHp(rarity: string): number {
-  const baseHp: Record<string, [number, number]> = {
-    'Common': [30, 70],
-    'Uncommon': [50, 90],
-    'Rare': [70, 120],
-    'Holo Rare': [90, 150],
-    'Ultra Rare': [120, 200],
-  };
-  const [min, max] = baseHp[rarity] || [40, 80];
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
 
 async function main() {
-  console.log('Seeding database...');
+  console.log('Seeding database with real Pokémon TCG data...');
 
   await prisma.userCard.deleteMany();
   await prisma.packOpening.deleteMany();
@@ -117,34 +351,22 @@ async function main() {
       },
     });
 
-    const pokemonNames = POKEMON_NAMES[packData.name] || [];
-    let cardIndex = 0;
-
-    for (const rarityConfig of RARITY_DISTRIBUTION) {
-      for (let i = 0; i < rarityConfig.count; i++) {
-        const name = pokemonNames[cardIndex % pokemonNames.length];
-        const type = getRandomType();
-        const hp = getRandomHp(rarityConfig.rarity);
-        const cardNumber = `${packData.setName.replace(/\s/g, '')}-${String(cardIndex + 1).padStart(3, '0')}`;
-
-        await prisma.card.create({
-          data: {
-            packId: pack.id,
-            name,
-            cardNumber,
-            rarity: rarityConfig.rarity,
-            type,
-            hp,
-            imageUrl: `https://via.placeholder.com/200x280?text=${encodeURIComponent(name)}`,
-            weight: rarityConfig.weight,
-          },
-        });
-
-        cardIndex++;
-      }
+    for (const cardData of packData.cards) {
+      await prisma.card.create({
+        data: {
+          packId: pack.id,
+          name: cardData.name,
+          cardNumber: cardData.cardNumber,
+          rarity: cardData.rarity,
+          type: cardData.type,
+          hp: cardData.hp,
+          imageUrl: cardData.imageUrl,
+          weight: cardData.weight,
+        },
+      });
     }
 
-    console.log(`Seeded pack: ${packData.name} with ${cardIndex} cards`);
+    console.log(`Seeded pack: ${packData.name} with ${packData.cards.length} cards`);
   }
 
   console.log('Seeding complete!');

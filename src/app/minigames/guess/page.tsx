@@ -1,4 +1,4 @@
-import { Metadata } from 'next/metadata';
+import type { Metadata } from 'next';
 import GuessGame from '@/components/GuessGame';
 
 export const metadata: Metadata = {

@@ -1,6 +1,7 @@
 'use client';
 
 import type { UserCardWithCard } from '@/types';
+import Image from 'next/image';
 
 export type CollectionGridProps = {
   userCards: UserCardWithCard[];
@@ -47,9 +48,20 @@ export default function CollectionGrid({ userCards, onToggleShowcase }: Collecti
 
           <div className="text-center">
             <div className="text-2xl mb-1">{getRarityEmoji(userCard.card.rarity)}</div>
-            <h4 className="font-bold text-sm truncate">{userCard.card.name}</h4>
+            {userCard.card.imageUrl && (
+              <div className="relative w-full aspect-[3/4] mb-2">
+                <Image
+                  src={userCard.card.imageUrl}
+                  alt={userCard.card.name}
+                  fill
+                  className="object-contain rounded"
+                  unoptimized
+                />
+              </div>
+            )}
+            <h4 className="font-bold text-sm truncate text-gray-900">{userCard.card.name}</h4>
             <p className="text-xs text-gray-600">{userCard.card.type}</p>
-            <p className="text-xs font-semibold mt-1">{userCard.card.rarity}</p>
+            <p className="text-xs font-semibold mt-1 text-gray-800">{userCard.card.rarity}</p>
             {userCard.card.hp && (
               <p className="text-xs text-gray-500">HP {userCard.card.hp}</p>
             )}

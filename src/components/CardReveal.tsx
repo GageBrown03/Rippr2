@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { Card } from '@/types';
+import Image from 'next/image';
 
 export type CardRevealProps = {
   cards: Card[];
@@ -73,9 +74,20 @@ export default function CardReveal({ cards, onClose }: CardRevealProps) {
               {revealed.has(index) ? (
                 <div className="text-center animate-card-flip">
                   <div className="text-3xl mb-2">{getRarityEmoji(card.rarity)}</div>
-                  <h4 className="font-bold text-sm truncate">{card.name}</h4>
+                  {card.imageUrl && (
+                    <div className="relative w-full aspect-[3/4] mb-2">
+                      <Image
+                        src={card.imageUrl}
+                        alt={card.name}
+                        fill
+                        className="object-contain rounded"
+                        unoptimized
+                      />
+                    </div>
+                  )}
+                  <h4 className="font-bold text-sm truncate text-gray-900">{card.name}</h4>
                   <p className="text-xs text-gray-600">{card.type}</p>
-                  <p className="text-xs font-semibold mt-1">{card.rarity}</p>
+                  <p className="text-xs font-semibold mt-1 text-gray-800">{card.rarity}</p>
                   {card.hp && (
                     <p className="text-xs text-gray-500">HP {card.hp}</p>
                   )}

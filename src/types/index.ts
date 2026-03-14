@@ -57,6 +57,18 @@ export type PackOpening = {
   openedAt: Date;
 };
 
+export type MinigameAttempt = {
+  id: string;
+  userId: string;
+  gameType: string;
+  cardId: string | null;
+  cardName: string;
+  responseTime: number;
+  correct: boolean;
+  creditsEarned: number;
+  createdAt: Date;
+};
+
 export type UserCardWithCard = UserCard & {
   card: Card;
 };
@@ -76,5 +88,27 @@ export type ApiResponse<T> = {
 
 export type PackOpenResult = {
   cards: Card[];
+  newCoins: number;
+};
+
+export type SilhouetteChallenge = {
+  cardId: string;
+  cardName: string;
+  imageUrl: string;
+  options: string[];
+  startTime: number;
+};
+
+export type SilhouetteSubmission = {
+  cardId: string;
+  answer: string;
+  responseTime: number;
+};
+
+export type SilhouetteResult = {
+  correct: boolean;
+  correctAnswer: string;
+  creditsEarned: number;
+  responseTime: number;
   newCoins: number;
 };

@@ -18,6 +18,7 @@ model User {
   sessions       Session[]
   userCards      UserCard[]
   packOpenings   PackOpening[]
+  minigameAttempts MinigameAttempt[]
 }
 
 model Session {
@@ -90,4 +91,21 @@ model PackOpening {
 
   @@index([userId])
   @@index([packId])
+}
+
+model MinigameAttempt {
+  id            String   @id @default(cuid())
+  userId        String
+  gameType      String
+  cardId        String?
+  cardName      String
+  responseTime  Int
+  correct       Boolean
+  creditsEarned Int
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([gameType])
+  @@index([createdAt])
 }

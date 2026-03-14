@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String        @id @default(cuid())
+  email          String        @unique
+  username       String        @unique
+  passwordHash   String
+  coins          Int           @default(1000)
+  lastDailyCoins DateTime?
+  createdAt      DateTime      @default(now())
+  sessions       Session[]
+  userCards      UserCard[]
+  packOpenings   PackOpening[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+}
+
+model Pack {
+  id           String        @id @default(cuid())
+  name         String        @unique
+  setName      String
+  description  String
+  imageUrl     String
+  cost         Int
+  cardsPerPack Int           @default(11)
+  createdAt    DateTime      @default(now())
+  cards        Card[]
+  openings     PackOpening[]
+}
+
+model Card {
+  id         String     @id @default(cuid())
+  packId     String
+  name       String
+  cardNumber String
+  rarity     String
+  type       String
+  hp         Int?
+  imageUrl   String
+  flavorText String?
+  weight     Float
+  createdAt  DateTime   @default(now())
+  pack       Pack       @relation(fields: [packId], references: [id], onDelete: Cascade)
+  userCards  UserCard[]
+
+  @@index([packId])
+  @@index([rarity])
+}
+
+model UserCard {
+  id       String   @id @default(cuid())
+  userId   String
+  cardId   String
+  pulledAt DateTime @default(now())
+  showcase Boolean  @default(false)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  card     Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([cardId])
+  @@index([showcase])
+}
+
+model PackOpening {
+  id         String   @id @default(cuid())
+  userId     String
+  packId     String
+  quantity   Int
+  coinsSpent Int
+  openedAt   DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pack       Pack     @relation(fields: [packId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([packId])
+}

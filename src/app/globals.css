@@ -147,3 +147,67 @@ body {
 .sparkle {
   animation: sparkle 1s ease-in-out infinite;
 }
+
+/* ═══════════════════════════════════════════
+   Pack Opening – Hybrid Tear/Scroll/Glow
+   ═══════════════════════════════════════════ */
+
+/* Pack tears apart: left half slides left + rotates */
+@keyframes tearLeft {
+  0%   { transform: translateX(0) rotate(0deg); opacity: 1; }
+  40%  { transform: translateX(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateX(-120px) rotate(-12deg); opacity: 0; }
+}
+
+/* Pack tears apart: right half slides right + rotates */
+@keyframes tearRight {
+  0%   { transform: translateX(0) rotate(0deg); opacity: 1; }
+  40%  { transform: translateX(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateX(120px) rotate(12deg); opacity: 0; }
+}
+
+/* Light burst through center of torn pack */
+@keyframes lightBurst {
+  0%   { opacity: 0; transform: scaleX(0.2) scaleY(0.5); }
+  30%  { opacity: 0; transform: scaleX(0.2) scaleY(0.5); }
+  60%  { opacity: 1; transform: scaleX(1) scaleY(1); }
+  100% { opacity: 0; transform: scaleX(3) scaleY(1.2); }
+}
+
+/* Cards cascade in from below during cascade stage */
+@keyframes cascadeIn {
+  0%   { transform: translateY(60px) scale(0.7) rotate(8deg); opacity: 0; }
+  60%  { transform: translateY(-6px) scale(1.03) rotate(-1deg); opacity: 1; }
+  100% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* Scrolling card placeholder pulse */
+@keyframes scrollingPulse {
+  0%, 100% { opacity: 0.6; border-color: rgba(139,92,246,0.3); }
+  50%      { opacity: 1;   border-color: rgba(139,92,246,0.7); }
+}
+
+/* Card flip inside the reel (front face starts rotated, flips to 0) */
+@keyframes reelFlipReveal {
+  0%   { transform: rotateY(180deg); }
+  100% { transform: rotateY(0deg); }
+}
+
+/* Revealed card pops into its slot */
+@keyframes revealPop {
+  0%   { transform: scale(0.5); opacity: 0; }
+  60%  { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Particle burst for rare+ reveals */
+@keyframes particleBurst {
+  0%   { transform: translate(-50%,-50%) translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(-50%,-50%) translate(var(--bx), var(--by)) scale(0); opacity: 0; }
+}
+
+/* Generic fade-in-up for labels and buttons */
+@keyframes fadeInUp {
+  0%   { transform: translateY(16px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}

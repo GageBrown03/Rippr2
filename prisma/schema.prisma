@@ -40,7 +40,7 @@ model Pack {
   description  String
   imageUrl     String
   cost         Int
-  cardsPerPack Int           @default(11)
+  cardsPerPack Int           @default(3)
   createdAt    DateTime      @default(now())
   cards        Card[]
   openings     PackOpening[]

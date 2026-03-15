@@ -9,7 +9,7 @@ export type CollectionFiltersProps = {
 
 const RARITIES = ['Common', 'Uncommon', 'Rare', 'Holo Rare', 'Ultra Rare'];
 const TYPES = ['Fire', 'Water', 'Grass', 'Electric', 'Psychic', 'Fighting', 'Dark', 'Steel', 'Fairy', 'Dragon', 'Normal', 'Ice', 'Ghost', 'Poison'];
-const SETS = ['Base Set', 'Premium Full Art', 'Evolving Skies', 'EX Holon Phantoms', 'The Vault: Gold & Silver', 'Diamond & Pearl: LV.X Legends', 'XY: Mega Evolution'];
+const SETS = ['Base Set', 'Premium Full Art', 'Evolving Skies', 'EX Holon Phantoms', 'The Vault: Gold & Silver', 'Diamond & Pearl: LV.X Legends', 'XY: Mega Evolution', 'Pokémon 151', 'Hidden Fates', 'The God Pack'];
 const SORT_OPTIONS: { value: CollectionFilters['sortBy']; label: string }[] = [
   { value: 'newest', label: 'Newest First' },
   { value: 'rarest', label: 'Rarest First' },

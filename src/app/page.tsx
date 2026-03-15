@@ -3,8 +3,8 @@ import Navbar from '@/components/Navbar';
 
 const FEATURED_CARDS = [
   { name: 'Charizard', set: 'Base Set', img: 'https://images.pokemontcg.io/base1/4_hires.png' },
-  { name: 'Dark Charizard', set: 'Team Rocket', img: 'https://images.pokemontcg.io/base4/4_hires.png' },
-  { name: 'Lapras', set: 'Fossil', img: 'https://images.pokemontcg.io/base3/10_hires.png' },
+  { name: 'Umbreon VMAX', set: 'Evolving Skies', img: 'https://images.pokemontcg.io/swsh7/215_hires.png' },
+  { name: 'Shiny Charizard GX', set: 'Hidden Fates', img: 'https://images.pokemontcg.io/sm115/SV49_hires.png' },
 ];
 
 export default function HomePage() {

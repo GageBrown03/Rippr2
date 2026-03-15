@@ -11,10 +11,22 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         _count: {
           select: { cards: true },
         },
+        cards: {
+          orderBy: { weight: 'asc' },
+          take: 1,
+          select: { imageUrl: true, name: true, rarity: true },
+        },
       },
     });
 
-    return successResponse(packs);
+    // Attach featured card info to each pack
+    const packsWithFeatured = packs.map((pack) => {
+      const featured = pack.cards[0] || null;
+      const { cards, ...packData } = pack;
+      return { ...packData, featuredCard: featured };
+    });
+
+    return successResponse(packsWithFeatured);
   } catch (error) {
     logger.error('Failed to fetch packs', { error });
     return errorResponse('Internal server error', 500);

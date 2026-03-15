@@ -41,21 +41,21 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" style={{ background: '#0a0a15' }}>
       <Navbar user={null} coins={0} />
       <main className="max-w-md mx-auto px-4 py-16">
-        <div className="bg-white rounded-xl shadow-lg p-8">
-          <h1 className="text-3xl font-bold text-center mb-6">Sign In</h1>
+        <div className="rounded-xl p-8" style={{ background: '#1a1f2e', border: '1px solid rgba(255,255,255,0.06)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
+          <h1 className="text-3xl font-bold text-center mb-6 text-white">Sign In</h1>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+            <div className="rounded-lg mb-4 px-4 py-3 text-sm font-medium" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#fca5a5' }}>
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="email" className="block text-sm font-medium mb-1" style={{ color: '#94a3b8' }}>
                 Email
               </label>
               <input
@@ -64,12 +64,13 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pokeblue focus:border-transparent"
+                className="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                style={{ background: '#0f172a', color: '#e2e8f0', border: '1px solid rgba(255,255,255,0.12)' }}
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="password" className="block text-sm font-medium mb-1" style={{ color: '#94a3b8' }}>
                 Password
               </label>
               <input
@@ -78,22 +79,24 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pokeblue focus:border-transparent"
+                className="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                style={{ background: '#0f172a', color: '#e2e8f0', border: '1px solid rgba(255,255,255,0.12)' }}
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full btn-primary py-3"
+              className="w-full py-3 rounded-lg font-bold text-white transition-all disabled:opacity-40 cursor-pointer hover:brightness-110"
+              style={{ background: 'linear-gradient(135deg, #E3350D, #c62d0a)', boxShadow: '0 4px 16px rgba(227,53,13,0.3)' }}
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
 
-          <p className="text-center mt-4 text-gray-600">
+          <p className="text-center mt-4" style={{ color: '#94a3b8' }}>
             Don&apos;t have an account?{' '}
-            <Link href="/register" className="text-pokeblue font-semibold hover:underline">
+            <Link href="/register" className="font-semibold hover:underline" style={{ color: '#60A5FA' }}>
               Register
             </Link>
           </p>

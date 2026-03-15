@@ -42,13 +42,8 @@ export default function CollectionPage() {
     }
   }, [filters]);
 
-  useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
-
-  useEffect(() => {
-    fetchCollection();
-  }, [fetchCollection]);
+  useEffect(() => { fetchUser(); }, [fetchUser]);
+  useEffect(() => { fetchCollection(); }, [fetchCollection]);
 
   async function handleToggleShowcase(userCardId: string) {
     const card = userCards.find((uc) => uc.id === userCardId);
@@ -82,22 +77,22 @@ export default function CollectionPage() {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen">
+      <div className="min-h-screen" style={{ background: '#0a0a15' }}>
         <Navbar user={user} coins={user?.coins ?? 0} />
         <main className="max-w-6xl mx-auto px-4 py-8">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold">My Collection</h1>
-            <div className="text-gray-600">
-              {userCards.length} cards | {showcaseCount}/12 showcased
+          <div className="flex justify-between items-center mb-6 flex-wrap gap-2">
+            <h1 className="text-3xl font-bold text-white">My Collection</h1>
+            <div style={{ color: '#94a3b8' }} className="text-sm">
+              {userCards.length} cards · {showcaseCount}/12 showcased
             </div>
           </div>
 
           <CollectionFilters onFilterChange={handleFilterChange} />
 
           {loading ? (
-            <div className="text-center py-16 text-gray-500">Loading collection...</div>
+            <div className="text-center py-16" style={{ color: '#64748b' }}>Loading collection...</div>
           ) : userCards.length === 0 ? (
-            <div className="text-center py-16 text-gray-500">
+            <div className="text-center py-16" style={{ color: '#64748b' }}>
               No cards yet! Go open some packs!
             </div>
           ) : (

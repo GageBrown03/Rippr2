@@ -24,7 +24,6 @@ export default function PacksPage() {
       const data = await res.json();
       if (data.success) {
         setUser(data.data);
-        // Check if daily coins were claimed recently (within last 24 hours)
         if (data.data.lastDailyCoins) {
           const lastClaim = new Date(data.data.lastDailyCoins).getTime();
           const now = Date.now();
@@ -75,10 +74,8 @@ export default function PacksPage() {
         return;
       }
 
-      // Find the pack that was opened
       const openedPack = packs.find((p) => p.id === packId);
       if (openedPack) {
-        // Start the animation
         setAnimatingPack({ pack: openedPack, cards: data.data.cards });
       }
 
@@ -91,7 +88,6 @@ export default function PacksPage() {
   }
 
   function handleAnimationComplete() {
-    // Animation finished, show the card reveal modal
     if (animatingPack) {
       setRevealedCards(animatingPack.cards);
       setAnimatingPack(null);
@@ -117,28 +113,35 @@ export default function PacksPage() {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen">
+      <div className="min-h-screen" style={{ background: '#0a0a15' }}>
         <Navbar user={user} coins={user?.coins ?? 0} />
         <main className="max-w-6xl mx-auto px-4 py-8">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold">Open Packs</h1>
+          <div className="flex justify-between items-center mb-8 flex-wrap gap-3">
+            <h1 className="text-3xl font-bold text-white">Open Packs</h1>
             <button
               onClick={handleClaimDaily}
               disabled={dailyClaimed}
-              className="btn-secondary"
+              className="px-5 py-2 rounded-lg font-bold text-sm transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+              style={{
+                background: dailyClaimed ? '#374151' : 'linear-gradient(135deg, #FACC15, #EAB308)',
+                color: dailyClaimed ? '#9CA3AF' : '#000',
+                boxShadow: dailyClaimed ? 'none' : '0 4px 16px rgba(234,179,8,0.3)',
+              }}
             >
               {dailyClaimed ? 'Daily Claimed ✓' : 'Claim 100 Daily Coins 🪙'}
             </button>
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+            <div className="rounded-lg mb-4 px-4 py-3 text-sm font-medium"
+              style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#fca5a5' }}
+            >
               {error}
             </div>
           )}
 
           {loading ? (
-            <div className="text-center py-16 text-gray-500">Loading packs...</div>
+            <div className="text-center py-16" style={{ color: '#64748b' }}>Loading packs...</div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {packs.map((pack) => (

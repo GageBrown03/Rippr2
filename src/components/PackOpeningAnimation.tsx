@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import type { Card } from '@/types';
 
@@ -12,205 +12,21 @@ export type PackOpeningAnimationProps = {
 };
 
 type AnimationStage = 'tear' | 'cascade' | 'picking' | 'done';
-type CardState = 'hidden' | 'facedown' | 'scrolling' | 'revealed';
+type CardState = 'hidden' | 'facedown' | 'flipping' | 'revealed';
 
 const RARITY_COLORS: Record<string, { border: string; glow: string; bg: string; label: string }> = {
-  Common:      { border: '#9CA3AF', glow: 'rgba(156,163,175,0.4)', bg: '#374151', label: '#9CA3AF' },
-  Uncommon:    { border: '#22C55E', glow: 'rgba(34,197,94,0.5)',   bg: '#14532D', label: '#4ADE80' },
-  Rare:        { border: '#3B82F6', glow: 'rgba(59,130,246,0.6)',  bg: '#1E3A5F', label: '#60A5FA' },
-  'Holo Rare': { border: '#A855F7', glow: 'rgba(168,85,247,0.7)', bg: '#3B0764', label: '#C084FC' },
-  'Ultra Rare':{ border: '#EAB308', glow: 'rgba(234,179,8,0.8)',  bg: '#422006', label: '#FACC15' },
+  Common:       { border: '#9CA3AF', glow: 'rgba(156,163,175,0.35)', bg: '#374151', label: '#D1D5DB' },
+  Uncommon:     { border: '#22C55E', glow: 'rgba(34,197,94,0.45)',   bg: '#14532D', label: '#4ADE80' },
+  Rare:         { border: '#3B82F6', glow: 'rgba(59,130,246,0.55)',  bg: '#1E3A5F', label: '#60A5FA' },
+  'Holo Rare':  { border: '#A855F7', glow: 'rgba(168,85,247,0.6)',  bg: '#3B0764', label: '#C084FC' },
+  'Ultra Rare': { border: '#EAB308', glow: 'rgba(234,179,8,0.7)',   bg: '#422006', label: '#FACC15' },
 };
-
-const REEL_SEQUENCE = [
-  'Common','Uncommon','Common','Rare','Common','Uncommon','Common',
-  'Holo Rare','Common','Rare','Uncommon','Common','Ultra Rare',
-  'Common','Uncommon','Rare','Common','Uncommon','Common','Rare',
-];
 
 function getRarityStyle(rarity: string) {
   return RARITY_COLORS[rarity] || RARITY_COLORS['Common'];
 }
 
-/* ────────────── Scroll Reel Overlay ────────────── */
-function ScrollReel({ card, onDone }: { card: Card; onDone: () => void }) {
-  const reelRef = useRef<HTMLDivElement>(null);
-  const [phase, setPhase] = useState<'spinning' | 'landed' | 'flipping' | 'done'>('spinning');
-  const SLOT_H = 140;
-
-  // Build reel: 20 rarity slots + the real card's rarity as the final slot
-  const reelItems = useRef<string[]>([
-    ...REEL_SEQUENCE,
-    card.rarity,
-  ]).current;
-
-  useEffect(() => {
-    const el = reelRef.current;
-    if (!el) return;
-
-    const targetY = (reelItems.length - 1) * SLOT_H;
-
-    // Reset position instantly
-    el.style.transition = 'none';
-    el.style.transform = 'translateY(0)';
-    void el.offsetHeight; // force reflow
-
-    // Animate with deceleration
-    el.style.transition = 'transform 2.4s cubic-bezier(0.12, 0.8, 0.2, 1)';
-    el.style.transform = `translateY(-${targetY}px)`;
-
-    const t1 = setTimeout(() => setPhase('landed'), 2500);
-    const t2 = setTimeout(() => setPhase('flipping'), 2900);
-    const t3 = setTimeout(() => {
-      setPhase('done');
-      onDone();
-    }, 3700);
-
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const style = getRarityStyle(card.rarity);
-
-  return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/75 backdrop-blur-sm">
-      <div className="flex flex-col items-center gap-6">
-
-        {/* Reel viewport */}
-        <div
-          className="relative overflow-hidden rounded-2xl"
-          style={{
-            width: 220,
-            height: SLOT_H,
-            border: '2px solid rgba(255,255,255,0.15)',
-            boxShadow: '0 0 40px rgba(0,0,0,0.6), inset 0 0 30px rgba(0,0,0,0.4)',
-          }}
-        >
-          {/* Selection brackets */}
-          <div className="absolute left-2 top-1/2 -translate-y-1/2 z-10 text-white/50 text-xl select-none">▸</div>
-          <div className="absolute right-2 top-1/2 -translate-y-1/2 z-10 text-white/50 text-xl select-none">◂</div>
-
-          {/* Top / bottom fade masks */}
-          <div className="absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-black/80 to-transparent z-[5] pointer-events-none" />
-          <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-black/80 to-transparent z-[5] pointer-events-none" />
-
-          {phase !== 'flipping' && phase !== 'done' ? (
-            <div ref={reelRef} className="flex flex-col" style={{ willChange: 'transform' }}>
-              {reelItems.map((rarity, i) => {
-                const s = getRarityStyle(rarity);
-                const isLast = i === reelItems.length - 1;
-                return (
-                  <div
-                    key={i}
-                    className="flex-shrink-0 flex items-center justify-center"
-                    style={{
-                      width: 220,
-                      height: SLOT_H,
-                      background: `linear-gradient(145deg, ${s.bg}, #0a0a15)`,
-                      borderBottom: '1px solid rgba(255,255,255,0.06)',
-                      boxShadow: isLast ? `inset 0 0 30px ${s.glow}` : 'none',
-                    }}
-                  >
-                    <div className="flex flex-col items-center gap-2">
-                      <div
-                        className="w-14 h-14 rounded-full flex items-center justify-center text-2xl font-black"
-                        style={{
-                          border: `3px solid ${s.border}`,
-                          color: s.border,
-                          boxShadow: `0 0 12px ${s.glow}`,
-                        }}
-                      >
-                        ?
-                      </div>
-                      <span
-                        className="text-xs font-bold tracking-widest uppercase"
-                        style={{ color: s.label }}
-                      >
-                        {rarity}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            /* ─── Flip to card face ─── */
-            <div className="w-full h-full" style={{ perspective: 1000 }}>
-              <div
-                className="w-full h-full relative"
-                style={{
-                  animation: 'reelFlipReveal 0.6s ease-out forwards',
-                  transformStyle: 'preserve-3d',
-                }}
-              >
-                {/* Front face = card image */}
-                <div
-                  className="absolute inset-0 overflow-hidden rounded-xl flex items-center justify-center"
-                  style={{
-                    border: `3px solid ${style.border}`,
-                    boxShadow: `0 0 40px ${style.glow}, 0 0 80px ${style.glow}`,
-                    backfaceVisibility: 'hidden',
-                  }}
-                >
-                  {card.imageUrl ? (
-                    <Image
-                      src={card.imageUrl}
-                      alt={card.name}
-                      fill
-                      className="object-cover"
-                      unoptimized
-                    />
-                  ) : (
-                    <div className="text-white text-center p-4" style={{ background: style.bg }}>
-                      <div className="font-bold">{card.name}</div>
-                    </div>
-                  )}
-                </div>
-                {/* Back face = rarity card back */}
-                <div
-                  className="absolute inset-0 flex items-center justify-center rounded-xl"
-                  style={{
-                    background: `linear-gradient(145deg, ${style.bg}, #0a0a15)`,
-                    border: `3px solid ${style.border}`,
-                    backfaceVisibility: 'hidden',
-                    transform: 'rotateY(180deg)',
-                  }}
-                >
-                  <div
-                    className="w-14 h-14 rounded-full flex items-center justify-center text-2xl font-black"
-                    style={{ border: `3px solid ${style.border}`, color: style.border }}
-                  >
-                    ?
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Card name + rarity (after landing) */}
-        {(phase === 'landed' || phase === 'flipping' || phase === 'done') && (
-          <div className="text-center" style={{ animation: 'fadeInUp 0.4s ease-out backwards' }}>
-            <h3 className="text-white font-bold text-xl drop-shadow-lg">{card.name}</h3>
-            <span
-              className="inline-block mt-2 px-4 py-1 rounded-full text-sm font-bold tracking-wider uppercase"
-              style={{
-                color: style.label,
-                border: `1px solid ${style.border}`,
-                background: style.bg,
-                boxShadow: `0 0 16px ${style.glow}`,
-              }}
-            >
-              {card.rarity}
-            </span>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-/* ────────────── Particle Burst (rare+ cards) ────────────── */
+/* ── Particle burst for rare+ reveals ── */
 function ParticleBurst({ color }: { color: string }) {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
@@ -240,7 +56,7 @@ function ParticleBurst({ color }: { color: string }) {
   );
 }
 
-/* ────────────── Main Component ────────────── */
+/* ── Main Component ── */
 export default function PackOpeningAnimation({
   packImageUrl,
   packName,
@@ -249,16 +65,15 @@ export default function PackOpeningAnimation({
 }: PackOpeningAnimationProps) {
   const [stage, setStage] = useState<AnimationStage>('tear');
   const [cardStates, setCardStates] = useState<CardState[]>(cards.map(() => 'hidden'));
-  const [scrollingIndex, setScrollingIndex] = useState<number | null>(null);
   const [burstIndex, setBurstIndex] = useState<number | null>(null);
 
-  /* ── Auto-progress: tear → cascade ── */
+  /* Auto-progress: tear → cascade */
   useEffect(() => {
     const t = setTimeout(() => setStage('cascade'), 1600);
     return () => clearTimeout(t);
   }, []);
 
-  /* ── Cascade: stagger cards face-down ── */
+  /* Cascade: stagger cards face-down */
   useEffect(() => {
     if (stage !== 'cascade') return;
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -271,41 +86,67 @@ export default function PackOpeningAnimation({
             n[i] = 'facedown';
             return n;
           });
-        }, i * 180 + 100),
+        }, i * 120 + 100),
       );
     });
 
-    timers.push(setTimeout(() => setStage('picking'), cards.length * 180 + 500));
+    timers.push(setTimeout(() => setStage('picking'), cards.length * 120 + 400));
     return () => timers.forEach(clearTimeout);
   }, [stage, cards]);
 
-  /* ── Card click → open reel ── */
-  const handleCardClick = useCallback(
+  /* Flip a single card */
+  const flipCard = useCallback(
     (index: number) => {
-      if (stage !== 'picking' || cardStates[index] !== 'facedown' || scrollingIndex !== null) return;
-      setScrollingIndex(index);
-      setCardStates((prev) => { const n = [...prev]; n[index] = 'scrolling'; return n; });
+      if (cardStates[index] !== 'facedown') return;
+
+      const card = cards[index];
+      const rs = getRarityStyle(card.rarity);
+      const isRarePlus = ['Rare', 'Holo Rare', 'Ultra Rare'].includes(card.rarity);
+
+      setCardStates((prev) => {
+        const n = [...prev];
+        n[index] = 'flipping';
+        return n;
+      });
+
+      // After flip animation completes → revealed
+      setTimeout(() => {
+        setCardStates((prev) => {
+          const n = [...prev];
+          n[index] = 'revealed';
+          return n;
+        });
+        if (isRarePlus) {
+          setBurstIndex(index);
+          setTimeout(() => setBurstIndex(null), 900);
+        }
+      }, 500);
     },
-    [stage, cardStates, scrollingIndex],
+    [cardStates, cards],
   );
 
-  /* ── Reel done → reveal card ── */
-  const handleScrollDone = useCallback(() => {
-    if (scrollingIndex === null) return;
-    const idx = scrollingIndex;
-    const card = cards[idx];
-    const isRarePlus = ['Rare', 'Holo Rare', 'Ultra Rare'].includes(card.rarity);
+  /* Reveal all at once */
+  const revealAll = useCallback(() => {
+    setCardStates((prev) =>
+      prev.map((s) => (s === 'facedown' ? 'flipping' : s)),
+    );
+    setTimeout(() => {
+      setCardStates((prev) => prev.map((s) => (s === 'flipping' ? 'revealed' : s)));
+      // Find best card for burst
+      const bestIdx = cards.reduce((best, card, i) => {
+        const order = ['Ultra Rare', 'Holo Rare', 'Rare'];
+        const bestOrder = order.indexOf(cards[best]?.rarity ?? '');
+        const curOrder = order.indexOf(card.rarity);
+        return curOrder !== -1 && (bestOrder === -1 || curOrder < bestOrder) ? i : best;
+      }, 0);
+      if (['Rare', 'Holo Rare', 'Ultra Rare'].includes(cards[bestIdx]?.rarity)) {
+        setBurstIndex(bestIdx);
+        setTimeout(() => setBurstIndex(null), 900);
+      }
+    }, 500);
+  }, [cards]);
 
-    setCardStates((prev) => { const n = [...prev]; n[idx] = 'revealed'; return n; });
-
-    if (isRarePlus) {
-      setBurstIndex(idx);
-      setTimeout(() => setBurstIndex(null), 900);
-    }
-    setScrollingIndex(null);
-  }, [scrollingIndex, cards]);
-
-  /* ── Check all revealed ── */
+  /* Check all revealed → done */
   const allRevealed = cardStates.every((s) => s === 'revealed');
   useEffect(() => {
     if (allRevealed && stage === 'picking') {
@@ -315,6 +156,7 @@ export default function PackOpeningAnimation({
   }, [allRevealed, stage]);
 
   const revealedCount = cardStates.filter((s) => s === 'revealed').length;
+  const anyFaceDown = cardStates.some((s) => s === 'facedown');
 
   return (
     <div
@@ -346,7 +188,7 @@ export default function PackOpeningAnimation({
           >
             <Image src={packImageUrl} alt={packName} fill className="object-contain" unoptimized priority />
           </div>
-          {/* Light burst through the tear */}
+          {/* Light burst */}
           <div
             className="absolute inset-0 flex items-center justify-center pointer-events-none"
             style={{ animation: 'lightBurst 1.4s ease-out forwards' }}
@@ -360,7 +202,6 @@ export default function PackOpeningAnimation({
               }}
             />
           </div>
-          {/* Label */}
           <div className="absolute -bottom-12 inset-x-0 text-center">
             <span className="text-white/70 font-bold text-lg tracking-wide animate-pulse">
               Opening {packName}…
@@ -371,21 +212,38 @@ export default function PackOpeningAnimation({
 
       {/* ═══ CASCADE / PICKING / DONE ═══ */}
       {stage !== 'tear' && (
-        <div className="w-full max-w-5xl px-4 flex flex-col items-center gap-6 sm:gap-8">
-          {/* Header */}
-          <div className="text-center">
+        <div className="w-full max-w-5xl px-4 flex flex-col items-center gap-4 sm:gap-6">
+          {/* Header + actions */}
+          <div className="text-center flex flex-col items-center gap-2">
             <h2 className="text-white/50 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase">
               {packName}
             </h2>
             {stage === 'picking' && !allRevealed && (
-              <p className="text-white/30 text-xs mt-1">
-                Tap a card to reveal · {revealedCount} / {cards.length}
-              </p>
+              <>
+                <p className="text-white/30 text-xs">
+                  Tap a card to reveal · {revealedCount} / {cards.length}
+                </p>
+                {anyFaceDown && (
+                  <button
+                    onClick={revealAll}
+                    className="mt-1 px-5 py-1.5 rounded-lg text-sm font-semibold text-white/80 transition-all hover:text-white hover:scale-105 active:scale-95 cursor-pointer"
+                    style={{
+                      background: 'rgba(255,255,255,0.1)',
+                      border: '1px solid rgba(255,255,255,0.2)',
+                    }}
+                  >
+                    Reveal All
+                  </button>
+                )}
+              </>
+            )}
+            {stage === 'done' && (
+              <p className="text-white/50 text-sm font-medium">All cards revealed!</p>
             )}
           </div>
 
           {/* Card grid */}
-          <div className="flex flex-wrap justify-center gap-2.5 sm:gap-4">
+          <div className="flex flex-wrap justify-center gap-2.5 sm:gap-3">
             {cards.map((card, i) => {
               const state = cardStates[i];
               const rs = getRarityStyle(card.rarity);
@@ -395,18 +253,22 @@ export default function PackOpeningAnimation({
                 <div
                   key={`${card.id}-${i}`}
                   className="relative"
-                  style={{ width: 'clamp(72px, 14vw, 130px)', aspectRatio: '3 / 4' }}
+                  style={{
+                    width: 'clamp(68px, 12vw, 120px)',
+                    aspectRatio: '3 / 4',
+                    perspective: 600,
+                  }}
                 >
-                  {/* Hidden */}
+                  {/* Hidden placeholder */}
                   {state === 'hidden' && <div className="w-full h-full rounded-xl bg-white/[0.03]" />}
 
-                  {/* Face-down */}
+                  {/* Face-down card */}
                   {state === 'facedown' && (
                     <button
-                      onClick={() => handleCardClick(i)}
+                      onClick={() => flipCard(i)}
                       className="w-full h-full rounded-xl transition-transform duration-150 hover:scale-[1.06] active:scale-95 focus:outline-none cursor-pointer"
                       style={{
-                        animation: 'cascadeIn 0.45s ease-out backwards',
+                        animation: 'cascadeIn 0.4s ease-out backwards',
                         background: 'linear-gradient(150deg, #1e293b 0%, #0f172a 100%)',
                         border: '2px solid rgba(255,255,255,0.1)',
                         boxShadow: '0 8px 30px rgba(0,0,0,0.6)',
@@ -416,32 +278,38 @@ export default function PackOpeningAnimation({
                         <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-white/20 flex items-center justify-center">
                           <span className="text-white/30 text-lg sm:text-xl font-bold">?</span>
                         </div>
-                        <span className="text-white/25 text-[8px] sm:text-[10px] font-medium tracking-widest uppercase">
-                          Tap
-                        </span>
+                        <span className="text-white/25 text-[8px] sm:text-[10px] font-medium tracking-widest uppercase">Tap</span>
                       </div>
                     </button>
                   )}
 
-                  {/* Scrolling placeholder */}
-                  {state === 'scrolling' && (
+                  {/* Flipping card (3D Y-axis flip) */}
+                  {state === 'flipping' && (
                     <div
-                      className="w-full h-full rounded-xl"
+                      className="w-full h-full rounded-xl overflow-hidden"
                       style={{
-                        background: 'linear-gradient(150deg, #1e293b, #0f172a)',
-                        border: '2px solid rgba(139,92,246,0.5)',
-                        boxShadow: '0 0 24px rgba(139,92,246,0.25)',
-                        animation: 'scrollingPulse 0.6s ease-in-out infinite',
+                        animation: 'cardFlip3D 0.5s ease-out forwards',
+                        transformStyle: 'preserve-3d',
+                        border: `2px solid ${rs.border}`,
+                        boxShadow: `0 0 20px ${rs.glow}`,
                       }}
-                    />
+                    >
+                      {card.imageUrl ? (
+                        <Image src={card.imageUrl} alt={card.name} fill className="object-cover" unoptimized />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center" style={{ background: rs.bg }}>
+                          <span className="text-white text-[10px] font-bold text-center px-1">{card.name}</span>
+                        </div>
+                      )}
+                    </div>
                   )}
 
-                  {/* Revealed */}
+                  {/* Revealed card */}
                   {state === 'revealed' && (
                     <div
                       className="w-full h-full rounded-xl overflow-hidden relative"
                       style={{
-                        animation: 'revealPop 0.4s ease-out backwards',
+                        animation: 'revealPop 0.3s ease-out backwards',
                         border: `2px solid ${rs.border}`,
                         boxShadow: isRarePlus
                           ? `0 0 20px ${rs.glow}, 0 0 50px ${rs.glow}, 0 4px 20px rgba(0,0,0,0.5)`
@@ -487,11 +355,6 @@ export default function PackOpeningAnimation({
             </button>
           )}
         </div>
-      )}
-
-      {/* ═══ SCROLL REEL OVERLAY ═══ */}
-      {scrollingIndex !== null && (
-        <ScrollReel card={cards[scrollingIndex]} onDone={handleScrollDone} />
       )}
     </div>
   );

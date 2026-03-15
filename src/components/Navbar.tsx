@@ -18,28 +18,28 @@ export default function Navbar({ user, coins }: NavbarProps) {
   }
 
   return (
-    <nav className="bg-pokered text-white shadow-lg">
+    <nav style={{ background: '#E3350D', boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }} className="text-white">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         <Link href="/" className="text-2xl font-extrabold tracking-tight">
           🎴 PokéPacks
         </Link>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4 sm:gap-6 flex-wrap">
           {user ? (
             <>
-              <Link href="/packs" className="hover:text-pokeyellow transition-colors font-semibold">
+              <Link href="/packs" className="hover:text-pokeyellow transition-colors font-semibold text-sm sm:text-base">
                 Packs
               </Link>
-              <Link href="/collection" className="hover:text-pokeyellow transition-colors font-semibold">
+              <Link href="/collection" className="hover:text-pokeyellow transition-colors font-semibold text-sm sm:text-base">
                 Collection
               </Link>
               <span className="bg-pokeyellow text-black px-3 py-1 rounded-full font-bold text-sm">
                 🪙 {coins.toLocaleString()}
               </span>
-              <span className="text-sm opacity-90">{user.username}</span>
+              <span className="text-sm opacity-90 hidden sm:inline">{user.username}</span>
               <button
                 onClick={handleLogout}
-                className="text-sm hover:text-pokeyellow transition-colors"
+                className="text-sm hover:text-pokeyellow transition-colors cursor-pointer"
               >
                 Logout
               </button>

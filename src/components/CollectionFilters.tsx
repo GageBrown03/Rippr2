@@ -16,6 +16,15 @@ const SORT_OPTIONS: { value: CollectionFilters['sortBy']; label: string }[] = [
   { value: 'alphabetical', label: 'A-Z' },
 ];
 
+const selectStyle: React.CSSProperties = {
+  background: '#0f172a',
+  color: '#e2e8f0',
+  border: '1px solid rgba(255,255,255,0.12)',
+  borderRadius: 8,
+  padding: '6px 10px',
+  fontSize: 13,
+};
+
 export default function CollectionFiltersComponent({ onFilterChange }: CollectionFiltersProps) {
   const [rarity, setRarity] = useState('');
   const [type, setType] = useState('');
@@ -55,66 +64,43 @@ export default function CollectionFiltersComponent({ onFilterChange }: Collectio
   }
 
   return (
-    <div className="bg-white rounded-xl shadow p-4 mb-6">
+    <div className="rounded-xl p-4 mb-6" style={{ background: '#1a1f2e', border: '1px solid rgba(255,255,255,0.06)' }}>
       <div className="flex flex-wrap gap-4 items-end">
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1">Rarity</label>
-          <select
-            value={rarity}
-            onChange={(e) => handleChange(e.target.value, undefined, undefined, undefined)}
-            className="border rounded px-2 py-1 text-sm"
-          >
+          <label className="block text-xs font-medium mb-1" style={{ color: '#64748b' }}>Rarity</label>
+          <select value={rarity} onChange={(e) => handleChange(e.target.value)} style={selectStyle}>
             <option value="">All</option>
-            {RARITIES.map((r) => (
-              <option key={r} value={r}>{r}</option>
-            ))}
+            {RARITIES.map((r) => (<option key={r} value={r}>{r}</option>))}
           </select>
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1">Type</label>
-          <select
-            value={type}
-            onChange={(e) => handleChange(undefined, e.target.value, undefined, undefined)}
-            className="border rounded px-2 py-1 text-sm"
-          >
+          <label className="block text-xs font-medium mb-1" style={{ color: '#64748b' }}>Type</label>
+          <select value={type} onChange={(e) => handleChange(undefined, e.target.value)} style={selectStyle}>
             <option value="">All</option>
-            {TYPES.map((t) => (
-              <option key={t} value={t}>{t}</option>
-            ))}
+            {TYPES.map((t) => (<option key={t} value={t}>{t}</option>))}
           </select>
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1">Set</label>
-          <select
-            value={setName}
-            onChange={(e) => handleChange(undefined, undefined, e.target.value, undefined)}
-            className="border rounded px-2 py-1 text-sm"
-          >
+          <label className="block text-xs font-medium mb-1" style={{ color: '#64748b' }}>Set</label>
+          <select value={setName} onChange={(e) => handleChange(undefined, undefined, e.target.value)} style={selectStyle}>
             <option value="">All</option>
-            {SETS.map((s) => (
-              <option key={s} value={s}>{s}</option>
-            ))}
+            {SETS.map((s) => (<option key={s} value={s}>{s}</option>))}
           </select>
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1">Sort By</label>
-          <select
-            value={sortBy}
-            onChange={(e) => handleChange(undefined, undefined, undefined, e.target.value as CollectionFilters['sortBy'])}
-            className="border rounded px-2 py-1 text-sm"
-          >
-            {SORT_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
-            ))}
+          <label className="block text-xs font-medium mb-1" style={{ color: '#64748b' }}>Sort By</label>
+          <select value={sortBy} onChange={(e) => handleChange(undefined, undefined, undefined, e.target.value as CollectionFilters['sortBy'])} style={selectStyle}>
+            {SORT_OPTIONS.map((opt) => (<option key={opt.value} value={opt.value}>{opt.label}</option>))}
           </select>
         </div>
 
         <button
           onClick={clearFilters}
-          className="text-sm text-pokeblue hover:underline"
+          className="text-sm hover:underline cursor-pointer"
+          style={{ color: '#60A5FA' }}
         >
           Clear Filters
         </button>

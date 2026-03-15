@@ -9,102 +9,108 @@ export type CardRevealProps = {
   onClose: () => void;
 };
 
-function getRarityClass(rarity: string): string {
-  switch (rarity) {
-    case 'Common': return 'card-common';
-    case 'Uncommon': return 'card-uncommon';
-    case 'Rare': return 'card-rare';
-    case 'Holo Rare': return 'card-holo-rare';
-    case 'Ultra Rare': return 'card-ultra-rare';
-    default: return 'card-common';
-  }
-}
+const RARITY_STYLES: Record<string, { border: string; glow: string; label: string }> = {
+  Common:       { border: '#6B7280', glow: 'rgba(107,114,128,0.2)', label: '#9CA3AF' },
+  Uncommon:     { border: '#22C55E', glow: 'rgba(34,197,94,0.25)',  label: '#4ADE80' },
+  Rare:         { border: '#3B82F6', glow: 'rgba(59,130,246,0.3)',  label: '#60A5FA' },
+  'Holo Rare':  { border: '#A855F7', glow: 'rgba(168,85,247,0.35)', label: '#C084FC' },
+  'Ultra Rare': { border: '#EAB308', glow: 'rgba(234,179,8,0.4)',  label: '#FACC15' },
+};
 
-function getRarityEmoji(rarity: string): string {
-  switch (rarity) {
-    case 'Common': return '⚪';
-    case 'Uncommon': return '🟢';
-    case 'Rare': return '🔵';
-    case 'Holo Rare': return '🟣';
-    case 'Ultra Rare': return '⭐';
-    default: return '⚪';
-  }
+function getStyle(rarity: string) {
+  return RARITY_STYLES[rarity] || RARITY_STYLES['Common'];
 }
 
 export default function CardReveal({ cards, onClose }: CardRevealProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [revealed, setRevealed] = useState<Set<number>>(new Set());
-
-  function revealCard(index: number) {
-    setRevealed((prev) => new Set(prev).add(index));
-  }
+  const [revealed, setRevealed] = useState<Set<number>>(new Set(cards.map((_, i) => i)));
 
   function revealAll() {
     setRevealed(new Set(cards.map((_, i) => i)));
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-80 z-50 overflow-y-auto">
+    <div className="fixed inset-0 z-50 overflow-y-auto" style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }}>
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-6 flex-wrap gap-3">
           <h2 className="text-2xl font-bold text-white">
             Pack Results ({cards.length} cards)
           </h2>
           <div className="flex gap-3">
-            <button onClick={revealAll} className="btn-secondary text-sm">
+            <button
+              onClick={revealAll}
+              className="px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:scale-105 cursor-pointer"
+              style={{ background: 'rgba(255,255,255,0.08)', color: '#e2e8f0', border: '1px solid rgba(255,255,255,0.15)' }}
+            >
               Reveal All
             </button>
-            <button onClick={onClose} className="btn-primary text-sm">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 rounded-lg text-sm font-bold transition-all hover:scale-105 cursor-pointer"
+              style={{ background: 'linear-gradient(135deg, #E3350D, #c62d0a)', color: '#fff' }}
+            >
               Close
             </button>
           </div>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {cards.map((card, index) => (
-            <div
-              key={`${card.id}-${index}`}
-              onClick={() => revealCard(index)}
-              className={`cursor-pointer rounded-xl p-3 transition-all duration-300 ${
-                revealed.has(index)
-                  ? getRarityClass(card.rarity)
-                  : 'bg-pokeblue'
-              }`}
-            >
-              {revealed.has(index) ? (
-                <div className="text-center animate-card-flip">
-                  <div className="text-3xl mb-2">{getRarityEmoji(card.rarity)}</div>
-                  {card.imageUrl && (
-                    <div className="relative w-full aspect-[3/4] mb-2">
-                      <Image
-                        src={card.imageUrl}
-                        alt={card.name}
-                        fill
-                        className="object-contain rounded"
-                        unoptimized
-                      />
-                    </div>
-                  )}
-                  <h4 className="font-bold text-sm truncate text-gray-900">{card.name}</h4>
-                  <p className="text-xs text-gray-600">{card.type}</p>
-                  <p className="text-xs font-semibold mt-1 text-gray-800">{card.rarity}</p>
-                  {card.hp && (
-                    <p className="text-xs text-gray-500">HP {card.hp}</p>
-                  )}
-                  {card.flavorText && (
-                    <p className="text-xs italic text-gray-500 mt-1 line-clamp-2">
-                      {card.flavorText}
-                    </p>
-                  )}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <div className="text-4xl">❓</div>
-                  <p className="text-white text-xs mt-2">Click to reveal</p>
-                </div>
-              )}
-            </div>
-          ))}
+          {cards.map((card, index) => {
+            const rs = getStyle(card.rarity);
+            const isRevealed = revealed.has(index);
+
+            return (
+              <div
+                key={`${card.id}-${index}`}
+                onClick={() => setRevealed((prev) => new Set(prev).add(index))}
+                className="cursor-pointer rounded-xl p-3 transition-all duration-300 hover:scale-[1.03]"
+                style={
+                  isRevealed
+                    ? {
+                        background: '#1a1f2e',
+                        border: `2px solid ${rs.border}`,
+                        boxShadow: `0 0 16px ${rs.glow}, 0 4px 16px rgba(0,0,0,0.4)`,
+                      }
+                    : {
+                        background: '#0f172a',
+                        border: '2px solid rgba(255,255,255,0.1)',
+                        boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
+                      }
+                }
+              >
+                {isRevealed ? (
+                  <div className="text-center">
+                    {card.imageUrl && (
+                      <div className="relative w-full aspect-[3/4] mb-2 rounded-lg overflow-hidden">
+                        <Image
+                          src={card.imageUrl}
+                          alt={card.name}
+                          fill
+                          className="object-contain rounded"
+                          unoptimized
+                        />
+                      </div>
+                    )}
+                    <h4 className="font-bold text-sm truncate text-white">{card.name}</h4>
+                    <p className="text-xs" style={{ color: '#94a3b8' }}>{card.type}</p>
+                    <p className="text-xs font-semibold mt-1" style={{ color: rs.label }}>{card.rarity}</p>
+                    {card.hp && (
+                      <p className="text-xs" style={{ color: '#64748b' }}>HP {card.hp}</p>
+                    )}
+                    {card.flavorText && (
+                      <p className="text-xs italic mt-1 line-clamp-2" style={{ color: '#64748b' }}>
+                        {card.flavorText}
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <div className="text-4xl">❓</div>
+                    <p className="text-xs mt-2" style={{ color: '#64748b' }}>Click to reveal</p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

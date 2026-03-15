@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Navbar from '@/components/Navbar';
 import PackCard from '@/components/PackCard';
 import CardReveal from '@/components/CardReveal';
+import PackOpeningAnimation from '@/components/PackOpeningAnimation';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import type { User, Pack, Card } from '@/types';
 
@@ -13,6 +14,7 @@ export default function PacksPage() {
   const [revealedCards, setRevealedCards] = useState<Card[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [opening, setOpening] = useState(false);
+  const [animatingPack, setAnimatingPack] = useState<{ pack: Pack; cards: Card[] } | null>(null);
   const [error, setError] = useState('');
   const [dailyClaimed, setDailyClaimed] = useState(false);
 
@@ -69,17 +71,32 @@ export default function PacksPage() {
 
       if (!data.success) {
         setError(data.error || 'Failed to open pack');
+        setOpening(false);
         return;
       }
 
-      setRevealedCards(data.data.cards);
+      // Find the pack that was opened
+      const openedPack = packs.find((p) => p.id === packId);
+      if (openedPack) {
+        // Start the animation
+        setAnimatingPack({ pack: openedPack, cards: data.data.cards });
+      }
+
       setUser((prev) => prev ? { ...prev, coins: data.data.newCoins } : null);
     } catch (err) {
       console.error('Failed to open pack:', err);
       setError('An unexpected error occurred');
-    } finally {
       setOpening(false);
     }
+  }
+
+  function handleAnimationComplete() {
+    // Animation finished, show the card reveal modal
+    if (animatingPack) {
+      setRevealedCards(animatingPack.cards);
+      setAnimatingPack(null);
+    }
+    setOpening(false);
   }
 
   async function handleClaimDaily() {
@@ -135,12 +152,13 @@ export default function PacksPage() {
             </div>
           )}
 
-          {opening && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="text-white text-2xl font-bold animate-pulse">
-                Opening packs...
-              </div>
-            </div>
+          {animatingPack && (
+            <PackOpeningAnimation
+              packImageUrl={animatingPack.pack.imageUrl}
+              packName={animatingPack.pack.name}
+              cards={animatingPack.cards}
+              onComplete={handleAnimationComplete}
+            />
           )}
 
           {revealedCards && (

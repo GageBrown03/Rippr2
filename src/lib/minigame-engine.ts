@@ -20,6 +20,15 @@ export const SILHOUETTE_CONFIG: MinigameConfig = {
   },
 };
 
+export const GUESS_CONFIG: MinigameConfig = {
+  timeLimit: 15000, // 15 seconds
+  rewardTiers: {
+    fast: { maxTime: 5000, credits: 1000 },
+    medium: { maxTime: 10000, credits: 1000 },
+    slow: { maxTime: 15000, credits: 1000 },
+  },
+};
+
 export function calculateCredits(responseTime: number, config: MinigameConfig = SILHOUETTE_CONFIG): number {
   if (responseTime <= config.rewardTiers.fast.maxTime) {
     return config.rewardTiers.fast.credits;

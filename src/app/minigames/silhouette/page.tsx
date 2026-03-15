@@ -3,73 +3,48 @@ import Link from 'next/link';
 import SilhouetteGame from '@/components/SilhouetteGame';
 
 export const metadata: Metadata = {
-  title: "Who's That Silhouette? - Pokémon Pack Opener",
+  title: "Who's That Silhouette? - PokéPacks",
   description: 'Test your Pokémon knowledge and earn credits by identifying silhouettes!',
 };
 
 export default function SilhouettePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-blue-50">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-800 mb-2">
-              🔍 Who's That Silhouette?
-            </h1>
-            <p className="text-lg text-gray-600">
-              Identify the Pokémon and earn credits based on your speed!
+    <div className="min-h-screen" style={{ background: '#0a0a15' }}>
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-white mb-1">
+            🔍 Who&apos;s That Silhouette?
+          </h1>
+          <p style={{ color: '#94a3b8' }}>
+            Identify the Pokémon and earn credits based on your speed!
+          </p>
+        </div>
+
+        <div className="mb-8">
+          <SilhouetteGame />
+        </div>
+
+        <div className="text-center">
+          <Link
+            href="/minigames"
+            className="inline-block px-6 py-3 rounded-lg font-semibold transition-all hover:scale-105"
+            style={{ background: 'rgba(255,255,255,0.08)', color: '#e2e8f0', border: '1px solid rgba(255,255,255,0.15)' }}
+          >
+            ← Back to Minigames
+          </Link>
+        </div>
+
+        <div className="mt-12 rounded-xl p-6" style={{ background: '#1a1f2e', border: '1px solid rgba(255,255,255,0.06)' }}>
+          <h2 className="text-xl font-bold text-white mb-4">How to Play</h2>
+          <div className="space-y-4" style={{ color: '#94a3b8' }}>
+            <p className="text-sm">
+              A Pokémon card appears as a black silhouette. You have 10 seconds to pick the correct name from 4 options.
+              The faster you answer, the more credits you earn!
             </p>
-          </div>
-
-          {/* Game Component */}
-          <div className="mb-8">
-            <SilhouetteGame />
-          </div>
-
-          {/* Navigation */}
-          <div className="text-center">
-            <Link
-              href="/minigames"
-              className="inline-block bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors font-semibold"
-            >
-              ← Back to Minigames
-            </Link>
-          </div>
-
-          {/* Instructions */}
-          <div className="mt-12 bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">How to Play</h2>
-            <div className="space-y-4 text-gray-700">
-              <div>
-                <h3 className="font-semibold text-lg mb-2">📋 Rules:</h3>
-                <ul className="list-disc list-inside space-y-1 ml-4">
-                  <li>A Pokémon card will appear as a black silhouette</li>
-                  <li>You have 10 seconds to identify it</li>
-                  <li>Choose from 4 multiple-choice options</li>
-                  <li>The faster you answer correctly, the more credits you earn!</li>
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="font-semibold text-lg mb-2">💰 Credit Rewards:</h3>
-                <ul className="list-disc list-inside space-y-1 ml-4">
-                  <li><span className="font-bold text-green-600">100 Credits</span> - Answer in 0-3 seconds (Lightning fast!)</li>
-                  <li><span className="font-bold text-yellow-600">50 Credits</span> - Answer in 3-7 seconds (Quick thinking!)</li>
-                  <li><span className="font-bold text-orange-600">10 Credits</span> - Answer in 7-10 seconds (Made it!)</li>
-                  <li><span className="font-bold text-gray-600">0 Credits</span> - Wrong answer or time's up</li>
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="font-semibold text-lg mb-2">💡 Tips:</h3>
-                <ul className="list-disc list-inside space-y-1 ml-4">
-                  <li>Study the shape carefully - look for distinctive features</li>
-                  <li>Rare and Illustration Rare cards appear more often</li>
-                  <li>Build your collection to become more familiar with the cards</li>
-                  <li>Practice makes perfect - play multiple rounds to improve!</li>
-                </ul>
-              </div>
+            <div className="flex flex-wrap gap-4 text-sm">
+              <span>⚡ 0-3s: <span style={{ color: '#4ADE80' }} className="font-bold">100 coins</span></span>
+              <span>🏃 3-7s: <span style={{ color: '#FACC15' }} className="font-bold">50 coins</span></span>
+              <span>🚶 7-10s: <span style={{ color: '#FB923C' }} className="font-bold">10 coins</span></span>
             </div>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { calculateCredits, checkAnswer, SILHOUETTE_CONFIG } from '@/lib/minigame-engine';
+import { calculateCredits, checkAnswer, GUESS_CONFIG } from '@/lib/minigame-engine';
 import { getUserFromRequest } from '@/lib/auth';
 import { z } from 'zod';
 
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if response was within time limit
-    if (responseTime > SILHOUETTE_CONFIG.timeLimit) {
+    if (responseTime > GUESS_CONFIG.timeLimit) {
       return NextResponse.json({
         correct: true,
         correctAnswer: card.name,
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate credits earned
-    const creditsEarned = calculateCredits(responseTime);
+    const creditsEarned = calculateCredits(responseTime, GUESS_CONFIG);
 
     // Update user's coins
     await prisma.user.update({

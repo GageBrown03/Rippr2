@@ -20,13 +20,15 @@ interface Result {
   message?: string;
 }
 
+const TIME_LIMIT = 15;
+
 export default function GuessGame() {
   const router = useRouter();
   const [challenge, setChallenge] = useState<Challenge | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
-  const [timeLeft, setTimeLeft] = useState(10);
+  const [timeLeft, setTimeLeft] = useState(TIME_LIMIT);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
 
   useEffect(() => {
@@ -38,7 +40,7 @@ export default function GuessGame() {
 
     const timer = setInterval(() => {
       const elapsed = Date.now() - challenge.startTime;
-      const remaining = Math.max(0, 10 - Math.floor(elapsed / 1000));
+      const remaining = Math.max(0, TIME_LIMIT - Math.floor(elapsed / 1000));
       setTimeLeft(remaining);
 
       if (remaining === 0) {
@@ -53,7 +55,7 @@ export default function GuessGame() {
     try {
       setLoading(true);
       const response = await fetch('/api/minigames/guess');
-      
+
       if (!response.ok) {
         if (response.status === 401) {
           router.push('/login');
@@ -64,12 +66,11 @@ export default function GuessGame() {
 
       const data = await response.json();
       setChallenge(data);
-      setTimeLeft(10);
+      setTimeLeft(TIME_LIMIT);
       setResult(null);
       setSelectedAnswer(null);
     } catch (error) {
       console.error('Error loading challenge:', error);
-      alert('Failed to load challenge. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -93,10 +94,7 @@ export default function GuessGame() {
       if (!response.ok) throw new Error('Failed to submit');
 
       const data = await response.json();
-      setResult({
-        ...data,
-        message: 'Time\'s up!',
-      });
+      setResult({ ...data, message: "Time's up!" });
     } catch (error) {
       console.error('Error submitting timeout:', error);
     } finally {
@@ -133,30 +131,23 @@ export default function GuessGame() {
       setResult(data);
     } catch (error) {
       console.error('Error submitting answer:', error);
-      alert('Failed to submit answer. Please try again.');
       setSubmitting(false);
       setSelectedAnswer(null);
     }
   }
 
   function getTimerColor() {
-    if (timeLeft > 7) return 'text-green-600';
-    if (timeLeft > 3) return 'text-yellow-600';
-    return 'text-red-600';
-  }
-
-  function getRewardTier(responseTime: number) {
-    if (responseTime <= 3000) return { tier: 'Lightning Fast!', color: 'text-green-600' };
-    if (responseTime <= 7000) return { tier: 'Quick!', color: 'text-yellow-600' };
-    return { tier: 'Made it!', color: 'text-orange-600' };
+    if (timeLeft > 10) return '#4ADE80';
+    if (timeLeft > 5) return '#FACC15';
+    return '#EF4444';
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#0a0a15' }}>
         <div className="text-center">
-          <div className="text-6xl mb-4 animate-bounce">🎮</div>
-          <p className="text-xl text-gray-600">Loading challenge...</p>
+          <div className="text-6xl mb-4 animate-bounce">🎯</div>
+          <p style={{ color: '#94a3b8' }} className="text-xl">Loading challenge...</p>
         </div>
       </div>
     );
@@ -164,12 +155,13 @@ export default function GuessGame() {
 
   if (!challenge) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#0a0a15' }}>
         <div className="text-center">
-          <p className="text-xl text-gray-600 mb-4">Failed to load challenge</p>
+          <p style={{ color: '#94a3b8' }} className="text-xl mb-4">Failed to load challenge</p>
           <button
             onClick={loadChallenge}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+            className="px-6 py-3 rounded-lg font-semibold text-white cursor-pointer hover:brightness-110 transition-all"
+            style={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)' }}
           >
             Try Again
           </button>
@@ -179,126 +171,130 @@ export default function GuessGame() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-2xl mx-auto">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-800 mb-2">
-              🎯 Guess That Pokémon!
-            </h1>
-            <p className="text-gray-600">
-              Identify the Pokémon and earn credits
-            </p>
-          </div>
+    <div className="min-h-screen" style={{ background: '#0a0a15' }}>
+      <div className="max-w-2xl mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="text-center mb-6">
+          <h1 className="text-3xl sm:text-4xl font-bold text-white mb-1">
+            🎯 Guess That Pokémon!
+          </h1>
+          <p style={{ color: '#94a3b8' }} className="text-sm">
+            Correct answer = <span style={{ color: '#FACC15' }} className="font-bold">🪙 1,000 coins</span>
+          </p>
+        </div>
 
-          {/* Timer */}
-          {!result && (
-            <div className="text-center mb-6">
-              <div className={`text-6xl font-bold ${getTimerColor()} transition-colors`}>
-                {timeLeft}s
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                <div
-                  className="bg-blue-600 h-2 rounded-full transition-all duration-100"
-                  style={{ width: `${(timeLeft / 10) * 100}%` }}
-                />
-              </div>
+        {/* Timer */}
+        {!result && (
+          <div className="text-center mb-6">
+            <div className="text-5xl font-bold transition-colors" style={{ color: getTimerColor() }}>
+              {timeLeft}s
             </div>
-          )}
-
-          {/* Card Image */}
-          <div className="bg-white rounded-lg shadow-lg p-8 mb-6">
-            <div className="relative w-full aspect-[3/4] max-w-sm mx-auto">
-              <Image
-                src={challenge.imageUrl}
-                alt="Pokémon to guess"
-                fill
-                className="object-contain"
-                priority
+            <div className="w-full rounded-full h-2 mt-2" style={{ background: 'rgba(255,255,255,0.1)' }}>
+              <div
+                className="h-2 rounded-full transition-all duration-100"
+                style={{
+                  width: `${(timeLeft / TIME_LIMIT) * 100}%`,
+                  background: getTimerColor(),
+                }}
               />
             </div>
           </div>
+        )}
 
-          {/* Result Display */}
-          {result && (
-            <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-              <div className="text-center">
-                <div className="text-6xl mb-4">
-                  {result.correct ? '✅' : '❌'}
-                </div>
-                <h2 className="text-2xl font-bold mb-2">
-                  {result.message || (result.correct ? 'Correct!' : 'Wrong!')}
-                </h2>
-                <p className="text-lg text-gray-600 mb-4">
-                  The answer was: <span className="font-bold">{result.correctAnswer}</span>
-                </p>
-
-                {result.correct && result.creditsEarned > 0 && (
-                  <div className="mb-4">
-                    <div className={`text-xl font-bold ${getRewardTier(result.responseTime).color}`}>
-                      {getRewardTier(result.responseTime).tier}
-                    </div>
-                    <div className="text-3xl font-bold text-yellow-600 mt-2">
-                      +{result.creditsEarned} Credits!
-                    </div>
-                    <p className="text-sm text-gray-500 mt-1">
-                      Response time: {(result.responseTime / 1000).toFixed(2)}s
-                    </p>
-                  </div>
-                )}
-
-                {result.correct && result.creditsEarned === 0 && (
-                  <p className="text-gray-600 mb-4">
-                    No credits earned - too slow!
-                  </p>
-                )}
-
-                <button
-                  onClick={loadChallenge}
-                  className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
-                >
-                  Next Challenge →
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Options */}
-          {!result && (
-            <div className="grid grid-cols-1 gap-3">
-              {challenge.options.map((option) => (
-                <button
-                  key={option}
-                  onClick={() => handleSubmit(option)}
-                  disabled={submitting}
-                  className={
-                    `w-full bg-white border-2 rounded-lg p-4 text-lg font-semibold transition-all ${
-                      submitting
-                        ? 'opacity-50 cursor-not-allowed'
-                        : 'hover:border-blue-500 hover:bg-blue-50 cursor-pointer'
-                    } ${
-                      selectedAnswer === option
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-300'
-                    }`
-                  }
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Back Button */}
-          <div className="mt-8 text-center">
-            <Link
-              href="/minigames"
-              className="inline-block bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors font-semibold"
-            >
-              ← Back to Minigames
-            </Link>
+        {/* Card Image */}
+        <div className="rounded-xl p-6 mb-6" style={{ background: '#1a1f2e', border: '1px solid rgba(255,255,255,0.06)' }}>
+          <div className="relative w-full aspect-[3/4] max-w-xs mx-auto">
+            <Image
+              src={challenge.imageUrl}
+              alt="Pokémon to guess"
+              fill
+              className="object-contain"
+              priority
+              unoptimized
+            />
           </div>
+        </div>
+
+        {/* Result Display */}
+        {result && (
+          <div className="rounded-xl p-6 mb-6 text-center" style={{ background: '#1a1f2e', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <div className="text-6xl mb-4">
+              {result.correct ? '✅' : '❌'}
+            </div>
+            <h2 className="text-2xl font-bold text-white mb-2">
+              {result.message || (result.correct ? 'Correct!' : 'Wrong!')}
+            </h2>
+            <p className="text-lg mb-4" style={{ color: '#94a3b8' }}>
+              The answer was: <span className="font-bold text-white">{result.correctAnswer}</span>
+            </p>
+
+            {result.correct && result.creditsEarned > 0 && (
+              <div className="mb-4">
+                <div className="text-3xl font-bold mt-2" style={{ color: '#FACC15' }}>
+                  +{result.creditsEarned.toLocaleString()} Coins! 🪙
+                </div>
+                <p className="text-sm mt-1" style={{ color: '#64748b' }}>
+                  Response time: {(result.responseTime / 1000).toFixed(2)}s
+                </p>
+              </div>
+            )}
+
+            {result.correct && result.creditsEarned === 0 && (
+              <p className="mb-4" style={{ color: '#94a3b8' }}>No coins earned — too slow!</p>
+            )}
+
+            <button
+              onClick={loadChallenge}
+              className="px-8 py-3 rounded-lg font-bold text-white transition-all hover:scale-105 active:scale-95 cursor-pointer"
+              style={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', boxShadow: '0 4px 20px rgba(99,102,241,0.4)' }}
+            >
+              Next Challenge →
+            </button>
+          </div>
+        )}
+
+        {/* Options */}
+        {!result && (
+          <div className="grid grid-cols-1 gap-3">
+            {challenge.options.map((option) => (
+              <button
+                key={option}
+                onClick={() => handleSubmit(option)}
+                disabled={submitting}
+                className="w-full rounded-xl p-4 text-lg font-semibold transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{
+                  background: selectedAnswer === option ? 'rgba(99,102,241,0.2)' : '#1a1f2e',
+                  border: selectedAnswer === option ? '2px solid #6366F1' : '2px solid rgba(255,255,255,0.1)',
+                  color: '#e2e8f0',
+                }}
+                onMouseEnter={(e) => {
+                  if (!submitting) {
+                    (e.target as HTMLElement).style.borderColor = '#6366F1';
+                    (e.target as HTMLElement).style.background = 'rgba(99,102,241,0.1)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (selectedAnswer !== option) {
+                    (e.target as HTMLElement).style.borderColor = 'rgba(255,255,255,0.1)';
+                    (e.target as HTMLElement).style.background = '#1a1f2e';
+                  }
+                }}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Back Button */}
+        <div className="mt-8 text-center">
+          <Link
+            href="/minigames"
+            className="inline-block px-6 py-3 rounded-lg font-semibold transition-all hover:scale-105"
+            style={{ background: 'rgba(255,255,255,0.08)', color: '#e2e8f0', border: '1px solid rgba(255,255,255,0.15)' }}
+          >
+            ← Back to Minigames
+          </Link>
         </div>
       </div>
     </div>

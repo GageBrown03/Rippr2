@@ -33,6 +33,9 @@ export default function Navbar({ user, coins }: NavbarProps) {
               <Link href="/collection" className="hover:text-pokeyellow transition-colors font-semibold text-sm sm:text-base">
                 Collection
               </Link>
+              <Link href="/minigames" className="hover:text-pokeyellow transition-colors font-semibold text-sm sm:text-base">
+                Games
+              </Link>
               <span className="bg-pokeyellow text-black px-3 py-1 rounded-full font-bold text-sm">
                 🪙 {coins.toLocaleString()}
               </span>

@@ -111,6 +111,22 @@ export default function PacksPage() {
     }
   }
 
+  async function handleAddBalance() {
+    try {
+      const res = await fetch('/api/coins/add', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        setUser((prev) => prev ? { ...prev, coins: data.data.newCoins } : null);
+      }
+    } catch (err) {
+      console.error('Failed to add balance:', err);
+    }
+  }
+
+  function handleSellUpdate(newCoins: number) {
+    setUser((prev) => prev ? { ...prev, coins: newCoins } : null);
+  }
+
   return (
     <ErrorBoundary>
       <div className="min-h-screen" style={{ background: '#0a0a15' }}>
@@ -118,18 +134,31 @@ export default function PacksPage() {
         <main className="max-w-6xl mx-auto px-4 py-8">
           <div className="flex justify-between items-center mb-8 flex-wrap gap-3">
             <h1 className="text-3xl font-bold text-white">Open Packs</h1>
-            <button
-              onClick={handleClaimDaily}
-              disabled={dailyClaimed}
-              className="px-5 py-2 rounded-lg font-bold text-sm transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-              style={{
-                background: dailyClaimed ? '#374151' : 'linear-gradient(135deg, #FACC15, #EAB308)',
-                color: dailyClaimed ? '#9CA3AF' : '#000',
-                boxShadow: dailyClaimed ? 'none' : '0 4px 16px rgba(234,179,8,0.3)',
-              }}
-            >
-              {dailyClaimed ? 'Daily Claimed ✓' : 'Claim 100 Daily Coins 🪙'}
-            </button>
+            <div className="flex gap-2 flex-wrap">
+              <button
+                onClick={handleAddBalance}
+                className="px-4 py-2 rounded-lg font-bold text-sm transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                style={{
+                  background: 'rgba(99,102,241,0.15)',
+                  color: '#818CF8',
+                  border: '1px solid rgba(99,102,241,0.3)',
+                }}
+              >
+                + Add 5,000 🪙
+              </button>
+              <button
+                onClick={handleClaimDaily}
+                disabled={dailyClaimed}
+                className="px-4 py-2 rounded-lg font-bold text-sm transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                style={{
+                  background: dailyClaimed ? '#374151' : 'linear-gradient(135deg, #FACC15, #EAB308)',
+                  color: dailyClaimed ? '#9CA3AF' : '#000',
+                  boxShadow: dailyClaimed ? 'none' : '0 4px 16px rgba(234,179,8,0.3)',
+                }}
+              >
+                {dailyClaimed ? 'Daily Claimed ✓' : 'Claim 100 Daily 🪙'}
+              </button>
+            </div>
           </div>
 
           {error && (
@@ -155,6 +184,27 @@ export default function PacksPage() {
             </div>
           )}
 
+          {/* ═══ LOADING OVERLAY (while API processes) ═══ */}
+          {opening && !animatingPack && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'radial-gradient(ellipse at 50% 40%, #1a1a2e 0%, #0a0a15 100%)' }}>
+              <div className="text-center">
+                <div className="relative w-20 h-20 mx-auto mb-6">
+                  <div
+                    className="absolute inset-0 rounded-full"
+                    style={{
+                      border: '4px solid rgba(255,255,255,0.1)',
+                      borderTopColor: '#8B5CF6',
+                      animation: 'spin 0.8s linear infinite',
+                    }}
+                  />
+                  <div className="absolute inset-2 flex items-center justify-center text-3xl">🎴</div>
+                </div>
+                <p className="text-white/70 text-lg font-semibold animate-pulse">Preparing your packs…</p>
+                <p className="text-white/30 text-sm mt-1">Shuffling cards</p>
+              </div>
+            </div>
+          )}
+
           {animatingPack && (
             <PackOpeningAnimation
               packImageUrl={animatingPack.pack.imageUrl}
@@ -168,6 +218,7 @@ export default function PacksPage() {
             <CardReveal
               cards={revealedCards}
               onClose={() => setRevealedCards(null)}
+              onSellUpdate={handleSellUpdate}
             />
           )}
         </main>

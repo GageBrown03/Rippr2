@@ -198,7 +198,7 @@ const PACKS = [
       { name: 'Mew ex', cardNumber: '100/110', rarity: 'Ultra Rare', type: 'Psychic', hp: 90, imageUrl: 'https://images.pokemontcg.io/ex11/100_hires.png', weight: 0.16 },
       { name: 'Crawdaunt ex', cardNumber: '99/110', rarity: 'Ultra Rare', type: 'Water', hp: 120, imageUrl: 'https://images.pokemontcg.io/ex11/99_hires.png', weight: 0.16 },
       // Holo Rares
-      { name: 'Rayquaza δ', cardNumber: '16/110', rarity: 'Holo Rare', type: 'Electric', hp: 90, imageUrl: 'https://images.pokemontcg.io/ex11/16_hires.png', weight: 0.16 },
+      { name: 'Rayquaza δ', cardNumber: '16/110', rarity: 'Holo Rare', type: 'Electric', hp: 90, imageUrl: 'https://images.pokemontcg.io/ex6/97_hires.png', weight: 0.16 },
       { name: 'Mewtwo δ', cardNumber: '24/110', rarity: 'Holo Rare', type: 'Electric', hp: 70, imageUrl: 'https://images.pokemontcg.io/ex11/24_hires.png', weight: 0.16 },
       { name: 'Gyarados δ', cardNumber: '8/110', rarity: 'Holo Rare', type: 'Electric', hp: 90, imageUrl: 'https://images.pokemontcg.io/ex11/8_hires.png', weight: 0.16 },
       { name: 'Kabutops δ', cardNumber: '9/110', rarity: 'Holo Rare', type: 'Fighting', hp: 100, imageUrl: 'https://images.pokemontcg.io/ex11/9_hires.png', weight: 0.16 },
@@ -415,7 +415,7 @@ const PACKS = [
     imageUrl: 'https://images.pokemontcg.io/sm115/logo.png',
     cards: [
       // Ultra Rares — Shiny GX
-      { name: 'Charizard GX (Shiny)', cardNumber: 'SV49/SV94', rarity: 'Ultra Rare', type: 'Fire', hp: 250, imageUrl: 'https://images.pokemontcg.io/sm115/SV49_hires.png', weight: 0.01 },
+      { name: 'Charizard GX (Shiny)', cardNumber: 'SV49/SV94', rarity: 'Ultra Rare', type: 'Fire', hp: 250, imageUrl: 'https://images.pokemontcg.io/sma/SV49_hires.png', weight: 0.01 },
       { name: 'Mewtwo GX (Shiny)', cardNumber: 'SV59/SV94', rarity: 'Ultra Rare', type: 'Psychic', hp: 190, imageUrl: 'https://images.pokemontcg.io/sm115/SV59_hires.png', weight: 0.01 },
       { name: 'Espeon GX (Shiny)', cardNumber: 'SV60/SV94', rarity: 'Ultra Rare', type: 'Psychic', hp: 200, imageUrl: 'https://images.pokemontcg.io/sm115/SV60_hires.png', weight: 0.01 },
       { name: 'Umbreon GX (Shiny)', cardNumber: 'SV69/SV94', rarity: 'Ultra Rare', type: 'Dark', hp: 200, imageUrl: 'https://images.pokemontcg.io/sm115/SV69_hires.png', weight: 0.01 },
@@ -458,7 +458,7 @@ const PACKS = [
       { name: 'Umbreon VMAX (Alt)', cardNumber: '215/203', rarity: 'Ultra Rare', type: 'Dark', hp: 310, imageUrl: 'https://images.pokemontcg.io/swsh7/215_hires.png', weight: 0.3 },
       { name: 'Rayquaza VMAX (Alt)', cardNumber: '218/203', rarity: 'Ultra Rare', type: 'Dragon', hp: 320, imageUrl: 'https://images.pokemontcg.io/swsh7/218_hires.png', weight: 0.3 },
       { name: 'Charizard VMAX (Shiny)', cardNumber: '74/73', rarity: 'Ultra Rare', type: 'Fire', hp: 330, imageUrl: 'https://images.pokemontcg.io/swsh35/74_hires.png', weight: 0.3 },
-      { name: 'Charizard GX (Shiny)', cardNumber: 'SV49/SV94', rarity: 'Ultra Rare', type: 'Fire', hp: 250, imageUrl: 'https://images.pokemontcg.io/sm115/SV49_hires.png', weight: 0.3 },
+      { name: 'Charizard GX (Shiny)', cardNumber: 'SV49/SV94', rarity: 'Ultra Rare', type: 'Fire', hp: 250, imageUrl: 'https://images.pokemontcg.io/sma/SV49_hires.png', weight: 0.3 },
       { name: 'Mew ex (SAR)', cardNumber: '205/165', rarity: 'Ultra Rare', type: 'Psychic', hp: 180, imageUrl: 'https://images.pokemontcg.io/sv3pt5/205_hires.png', weight: 0.3 },
       { name: 'Lugia (Neo)', cardNumber: '9/111', rarity: 'Ultra Rare', type: 'Psychic', hp: 90, imageUrl: 'https://images.pokemontcg.io/neo1/9_hires.png', weight: 0.3 },
       { name: 'Pikachu VMAX (RR)', cardNumber: '188/185', rarity: 'Ultra Rare', type: 'Electric', hp: 310, imageUrl: 'https://images.pokemontcg.io/swsh4/188_hires.png', weight: 0.3 },
@@ -474,7 +474,7 @@ const PACKS = [
       { name: 'Dialga (Holo)', cardNumber: '1/130', rarity: 'Holo Rare', type: 'Fighting', hp: 100, imageUrl: 'https://images.pokemontcg.io/dp1/1_hires.png', weight: 0.5 },
       { name: 'Palkia (Holo)', cardNumber: '11/130', rarity: 'Holo Rare', type: 'Water', hp: 90, imageUrl: 'https://images.pokemontcg.io/dp1/11_hires.png', weight: 0.5 },
       { name: 'Ho-Oh (Holo)', cardNumber: '7/64', rarity: 'Holo Rare', type: 'Fire', hp: 90, imageUrl: 'https://images.pokemontcg.io/neo3/7_hires.png', weight: 0.5 },
-      { name: 'Rayquaza δ (Holo)', cardNumber: '16/110', rarity: 'Holo Rare', type: 'Electric', hp: 90, imageUrl: 'https://images.pokemontcg.io/ex11/16_hires.png', weight: 0.5 },
+      { name: 'Rayquaza δ (Holo)', cardNumber: '16/110', rarity: 'Holo Rare', type: 'Electric', hp: 90, imageUrl: 'https://images.pokemontcg.io/ex6/97_hires.png', weight: 0.5 },
     ],
   },
 ];

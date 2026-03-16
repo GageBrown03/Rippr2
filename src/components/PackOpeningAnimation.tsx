@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import type { Card } from '@/types';
 
@@ -26,21 +26,95 @@ function getRarityStyle(rarity: string) {
   return RARITY_COLORS[rarity] || RARITY_COLORS['Common'];
 }
 
+/* ── Sound effects via Web Audio API ── */
+function useCardSounds() {
+  const ctxRef = useRef<AudioContext | null>(null);
+  const [muted, setMuted] = useState(false);
+
+  function getCtx() {
+    if (!ctxRef.current) ctxRef.current = new AudioContext();
+    return ctxRef.current;
+  }
+
+  function playFlip() {
+    if (muted) return;
+    try {
+      const ctx = getCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1800, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.12);
+    } catch {}
+  }
+
+  function playRevealRare() {
+    if (muted) return;
+    try {
+      const ctx = getCtx();
+      // Shimmer chord
+      [800, 1200, 1600].forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.05);
+        gain.gain.setValueAtTime(0.08, ctx.currentTime + i * 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4 + i * 0.05);
+        osc.start(ctx.currentTime + i * 0.05);
+        osc.stop(ctx.currentTime + 0.5);
+      });
+    } catch {}
+  }
+
+  function playTear() {
+    if (muted) return;
+    try {
+      const ctx = getCtx();
+      // Noise burst for paper tear
+      const bufferSize = ctx.sampleRate * 0.15;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+      }
+      const source = ctx.createBufferSource();
+      const gain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+      source.buffer = buffer;
+      filter.type = 'highpass';
+      filter.frequency.value = 2000;
+      source.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+      source.start(ctx.currentTime);
+    } catch {}
+  }
+
+  return { muted, setMuted, playFlip, playRevealRare, playTear };
+}
+
 function ParticleBurst({ color }: { color: string }) {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
       {Array.from({ length: 14 }).map((_, i) => {
         const angle = (i / 14) * 360;
-        const dist = 50 + Math.random() * 30;
+        const dist = 60 + Math.random() * 40;
         const dx = Math.cos((angle * Math.PI) / 180) * dist;
         const dy = Math.sin((angle * Math.PI) / 180) * dist;
         return (
-          <div
-            key={i}
-            className="absolute w-1.5 h-1.5 rounded-full"
+          <div key={i} className="absolute w-2 h-2 rounded-full"
             style={{
-              background: color,
-              left: '50%', top: '50%',
+              background: color, left: '50%', top: '50%',
               transform: 'translate(-50%,-50%)',
               animation: `particleBurst 0.7s ease-out ${i * 0.03}s forwards`,
               // @ts-expect-error CSS custom property
@@ -54,31 +128,29 @@ function ParticleBurst({ color }: { color: string }) {
 }
 
 export default function PackOpeningAnimation({
-  packImageUrl,
-  packName,
-  cards,
-  onComplete,
+  packImageUrl, packName, cards, onComplete,
 }: PackOpeningAnimationProps) {
   const [stage, setStage] = useState<AnimationStage>('tear');
   const [cardStates, setCardStates] = useState<CardState[]>(cards.map(() => 'hidden'));
   const [burstIndex, setBurstIndex] = useState<number | null>(null);
+  const sounds = useCardSounds();
 
   useEffect(() => {
+    sounds.playTear();
     const t = setTimeout(() => setStage('cascade'), 1600);
     return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (stage !== 'cascade') return;
     const timers: ReturnType<typeof setTimeout>[] = [];
     cards.forEach((_, i) => {
-      timers.push(
-        setTimeout(() => {
-          setCardStates((prev) => { const n = [...prev]; n[i] = 'facedown'; return n; });
-        }, i * 80 + 100),
-      );
+      timers.push(setTimeout(() => {
+        setCardStates((prev) => { const n = [...prev]; n[i] = 'facedown'; return n; });
+      }, i * 120 + 100));
     });
-    timers.push(setTimeout(() => setStage('picking'), cards.length * 80 + 300));
+    timers.push(setTimeout(() => setStage('picking'), cards.length * 120 + 300));
     return () => timers.forEach(clearTimeout);
   }, [stage, cards]);
 
@@ -87,21 +159,32 @@ export default function PackOpeningAnimation({
       if (cardStates[index] !== 'facedown') return;
       const card = cards[index];
       const isRarePlus = ['Rare', 'Holo Rare', 'Ultra Rare'].includes(card.rarity);
+
+      sounds.playFlip();
       setCardStates((prev) => { const n = [...prev]; n[index] = 'flipping'; return n; });
+
       setTimeout(() => {
         setCardStates((prev) => { const n = [...prev]; n[index] = 'revealed'; return n; });
-        if (isRarePlus) { setBurstIndex(index); setTimeout(() => setBurstIndex(null), 900); }
+        if (isRarePlus) {
+          sounds.playRevealRare();
+          setBurstIndex(index);
+          setTimeout(() => setBurstIndex(null), 900);
+        }
       }, 500);
     },
-    [cardStates, cards],
+    [cardStates, cards, sounds],
   );
 
   const revealAll = useCallback(() => {
+    sounds.playFlip();
     setCardStates((prev) => prev.map((s) => (s === 'facedown' ? 'flipping' : s)));
     setTimeout(() => {
       setCardStates((prev) => prev.map((s) => (s === 'flipping' ? 'revealed' : s)));
+      const hasRare = cards.some(c => ['Rare', 'Holo Rare', 'Ultra Rare'].includes(c.rarity));
+      if (hasRare) sounds.playRevealRare();
     }, 500);
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cards]);
 
   const allRevealed = cardStates.every((s) => s === 'revealed');
   useEffect(() => {
@@ -115,11 +198,20 @@ export default function PackOpeningAnimation({
   const anyFaceDown = cardStates.some((s) => s === 'facedown');
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex flex-col select-none overflow-y-auto"
-      style={{ background: 'radial-gradient(ellipse at 50% 40%, #1a1a2e 0%, #0a0a15 100%)' }}
-    >
-      {/* TEAR STAGE — centered */}
+    <div className="fixed inset-0 z-50 flex flex-col select-none overflow-y-auto"
+      style={{ background: 'radial-gradient(ellipse at 50% 40%, #1a1a2e 0%, #0a0a15 100%)' }}>
+
+      {/* Mute button — always visible */}
+      <button
+        onClick={() => sounds.setMuted(!sounds.muted)}
+        className="fixed top-4 right-4 z-[60] w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-all hover:scale-110"
+        style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}
+        title={sounds.muted ? 'Unmute' : 'Mute'}
+      >
+        <span className="text-lg">{sounds.muted ? '🔇' : '🔊'}</span>
+      </button>
+
+      {/* TEAR STAGE */}
       {stage === 'tear' && (
         <div className="flex-1 flex items-center justify-center">
           <div className="relative w-56 h-80 sm:w-64 sm:h-96" style={{ perspective: 1000 }}>
@@ -139,7 +231,7 @@ export default function PackOpeningAnimation({
         </div>
       )}
 
-      {/* CARDS STAGE — scrollable */}
+      {/* CARDS STAGE */}
       {stage !== 'tear' && (
         <div className="flex flex-col min-h-full">
           {/* Sticky header */}
@@ -149,11 +241,9 @@ export default function PackOpeningAnimation({
               <div className="flex items-center justify-center gap-3 mt-2">
                 <span className="text-white/30 text-xs">{revealedCount} / {cards.length}</span>
                 {anyFaceDown && (
-                  <button
-                    onClick={revealAll}
+                  <button onClick={revealAll}
                     className="px-4 py-1.5 rounded-lg text-sm font-semibold text-white/80 transition-all hover:text-white hover:scale-105 active:scale-95 cursor-pointer"
-                    style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}
-                  >
+                    style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}>
                     Reveal All
                   </button>
                 )}
@@ -161,41 +251,54 @@ export default function PackOpeningAnimation({
             )}
           </div>
 
-          {/* Card grid — grows and scrolls */}
-          <div className="flex-1 flex items-start justify-center px-4 pb-24">
-            <div className="flex flex-wrap justify-center gap-2.5 sm:gap-3 max-w-5xl">
+          {/* Card grid — LARGE cards */}
+          <div className="flex-1 flex items-center justify-center px-4 pb-24">
+            <div className="flex flex-wrap justify-center gap-4 sm:gap-6 max-w-6xl">
               {cards.map((card, i) => {
                 const state = cardStates[i];
                 const rs = getRarityStyle(card.rarity);
                 const isRarePlus = ['Rare', 'Holo Rare', 'Ultra Rare'].includes(card.rarity);
 
                 return (
-                  <div key={`${card.id}-${i}`} className="relative" style={{ width: 'clamp(68px, 12vw, 110px)', aspectRatio: '3 / 4', perspective: 600 }}>
-                    {state === 'hidden' && <div className="w-full h-full rounded-xl bg-white/[0.03]" />}
+                  <div key={`${card.id}-${i}`} className="relative"
+                    style={{ width: 'clamp(140px, 22vw, 240px)', aspectRatio: '3 / 4', perspective: 800 }}>
+                    {state === 'hidden' && <div className="w-full h-full rounded-2xl bg-white/[0.03]" />}
+
                     {state === 'facedown' && (
-                      <button
-                        onClick={() => flipCard(i)}
-                        className="w-full h-full rounded-xl transition-transform duration-150 hover:scale-[1.06] active:scale-95 focus:outline-none cursor-pointer"
-                        style={{ animation: 'cascadeIn 0.4s ease-out backwards', background: 'linear-gradient(150deg, #1e293b, #0f172a)', border: '2px solid rgba(255,255,255,0.1)', boxShadow: '0 8px 30px rgba(0,0,0,0.6)' }}
-                      >
-                        <div className="flex flex-col items-center justify-center h-full gap-1">
-                          <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full border-2 border-white/20 flex items-center justify-center">
-                            <span className="text-white/30 text-base sm:text-lg font-bold">?</span>
+                      <button onClick={() => flipCard(i)}
+                        className="w-full h-full rounded-2xl transition-transform duration-150 hover:scale-[1.04] active:scale-95 focus:outline-none cursor-pointer"
+                        style={{ animation: 'cascadeIn 0.4s ease-out backwards', background: 'linear-gradient(150deg, #1e293b, #0f172a)', border: '2px solid rgba(255,255,255,0.12)', boxShadow: '0 12px 40px rgba(0,0,0,0.6)' }}>
+                        <div className="flex flex-col items-center justify-center h-full gap-3">
+                          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-white/20 flex items-center justify-center">
+                            <span className="text-white/30 text-2xl sm:text-3xl font-bold">?</span>
                           </div>
+                          <span className="text-white/25 text-xs sm:text-sm font-medium tracking-widest uppercase">Tap to Reveal</span>
                         </div>
                       </button>
                     )}
+
                     {state === 'flipping' && (
-                      <div className="w-full h-full rounded-xl overflow-hidden" style={{ animation: 'cardFlip3D 0.5s ease-out forwards', transformStyle: 'preserve-3d', border: `2px solid ${rs.border}`, boxShadow: `0 0 20px ${rs.glow}` }}>
-                        {card.imageUrl ? <Image src={card.imageUrl} alt={card.name} fill className="object-cover" unoptimized /> : <div className="w-full h-full flex items-center justify-center" style={{ background: rs.bg }}><span className="text-white text-[10px] font-bold text-center px-1">{card.name}</span></div>}
+                      <div className="w-full h-full rounded-2xl overflow-hidden"
+                        style={{ animation: 'cardFlip3D 0.5s ease-out forwards', transformStyle: 'preserve-3d', border: `3px solid ${rs.border}`, boxShadow: `0 0 30px ${rs.glow}` }}>
+                        {card.imageUrl ? <Image src={card.imageUrl} alt={card.name} fill className="object-cover" unoptimized /> :
+                          <div className="w-full h-full flex items-center justify-center" style={{ background: rs.bg }}>
+                            <span className="text-white text-sm font-bold text-center px-2">{card.name}</span>
+                          </div>}
                       </div>
                     )}
+
                     {state === 'revealed' && (
-                      <div className="w-full h-full rounded-xl overflow-hidden relative" style={{ animation: 'revealPop 0.3s ease-out backwards', border: `2px solid ${rs.border}`, boxShadow: isRarePlus ? `0 0 20px ${rs.glow}, 0 0 50px ${rs.glow}` : `0 0 12px ${rs.glow}` }}>
+                      <div className="w-full h-full rounded-2xl overflow-hidden relative"
+                        style={{ animation: 'revealPop 0.3s ease-out backwards', border: `3px solid ${rs.border}`,
+                          boxShadow: isRarePlus ? `0 0 25px ${rs.glow}, 0 0 60px ${rs.glow}, 0 8px 30px rgba(0,0,0,0.5)` : `0 0 15px ${rs.glow}, 0 8px 30px rgba(0,0,0,0.5)` }}>
                         {burstIndex === i && <ParticleBurst color={rs.border} />}
-                        {card.imageUrl ? <Image src={card.imageUrl} alt={card.name} fill className="object-cover" unoptimized /> : <div className="w-full h-full flex items-center justify-center" style={{ background: rs.bg }}><span className="text-white text-[10px] font-bold text-center px-1">{card.name}</span></div>}
-                        <div className="absolute bottom-0 inset-x-0 py-0.5 text-center" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.85))' }}>
-                          <span className="text-[7px] sm:text-[8px] font-bold tracking-widest uppercase" style={{ color: rs.label }}>{card.rarity}</span>
+                        {card.imageUrl ? <Image src={card.imageUrl} alt={card.name} fill className="object-cover" unoptimized /> :
+                          <div className="w-full h-full flex items-center justify-center" style={{ background: rs.bg }}>
+                            <span className="text-white text-sm font-bold text-center px-2">{card.name}</span>
+                          </div>}
+                        <div className="absolute bottom-0 inset-x-0 py-1.5 px-2 text-center" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.9))' }}>
+                          <div className="text-white text-xs sm:text-sm font-bold truncate">{card.name}</div>
+                          <span className="text-[10px] sm:text-xs font-bold tracking-wider uppercase" style={{ color: rs.label }}>{card.rarity}</span>
                         </div>
                       </div>
                     )}
@@ -205,14 +308,12 @@ export default function PackOpeningAnimation({
             </div>
           </div>
 
-          {/* Sticky bottom collect button */}
+          {/* Sticky bottom */}
           {stage === 'done' && (
             <div className="sticky bottom-0 z-10 py-4 text-center" style={{ background: 'linear-gradient(transparent, #0a0a15 40%)' }}>
-              <button
-                onClick={onComplete}
+              <button onClick={onComplete}
                 className="px-8 py-3 rounded-xl font-bold text-white text-base sm:text-lg tracking-wide transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
-                style={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', boxShadow: '0 4px 30px rgba(99,102,241,0.45)', animation: 'fadeInUp 0.5s ease-out backwards' }}
-              >
+                style={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', boxShadow: '0 4px 30px rgba(99,102,241,0.45)', animation: 'fadeInUp 0.5s ease-out backwards' }}>
                 Collect Cards →
               </button>
             </div>

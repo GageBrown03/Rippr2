@@ -56,15 +56,15 @@ export default function MinigamesPage() {
               style={{ background: '#1a1f2e', border: '1px solid rgba(255,255,255,0.06)' }}
             >
               <div className="p-8" style={{ background: 'linear-gradient(135deg, #059669, #0D9488)' }}>
-                <div className="text-6xl mb-4 group-hover:scale-110 transition-transform">🎯</div>
-                <h2 className="text-2xl font-bold text-white mb-1">Guess That Pokémon!</h2>
-                <p className="text-white/70 text-sm">Identify Pokémon from their card images</p>
+                <div className="text-6xl mb-4 group-hover:scale-110 transition-transform">🧠</div>
+                <h2 className="text-2xl font-bold text-white mb-1">Who&apos;s That Pokémon?</h2>
+                <p className="text-white/70 text-sm">Read the clue, guess the Pokémon!</p>
               </div>
               <div className="p-6">
                 <div className="mb-4">
                   <h3 className="font-semibold text-white text-sm mb-2">How to Play:</h3>
                   <p className="text-sm" style={{ color: '#94a3b8' }}>
-                    View a Pokémon card image, choose the correct name from 4 options within 15 seconds.
+                    Read a Pokédex-style description, then pick the correct Pokémon from 4 options within 15 seconds.
                   </p>
                 </div>
                 <div className="mb-4">

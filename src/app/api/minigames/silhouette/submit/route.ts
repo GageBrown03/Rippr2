@@ -7,7 +7,7 @@ import { SilhouetteResult } from '@/types';
 export async function POST(request: NextRequest) {
   try {
     const cookieStore = await cookies();
-    const sessionToken = cookieStore.get('session')?.value;
+    const sessionToken = cookieStore.get('session_token')?.value;
 
     if (!sessionToken) {
       return NextResponse.json(

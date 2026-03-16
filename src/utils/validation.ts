@@ -27,5 +27,5 @@ export const collectionQuerySchema = z.object({
   setName: z.string().optional(),
   sortBy: z.enum(['newest', 'rarest', 'alphabetical']).optional().default('newest'),
   page: z.coerce.number().int().min(1).optional().default(1),
-  limit: z.coerce.number().int().min(1).max(100).optional().default(20),
+  limit: z.coerce.number().int().min(1).max(1000).optional().default(100),
 });

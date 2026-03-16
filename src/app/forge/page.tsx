@@ -31,20 +31,19 @@ export default function ForgePage() {
     setLoading(true);
     try {
       const [userRes, collRes, packsRes] = await Promise.all([
-        fetch('/api/auth/me'), fetch('/api/collection?limit=500&sortBy=rarest'), fetch('/api/packs'),
+        fetch('/api/auth/me'),
+        fetch('/api/collection?limit=500&sortBy=rarest'),
+        fetch('/api/packs'),
       ]);
-      const [userData, collData, packsData] = await Promise.all([userRes.json(), collRes.json(), packsRes.json()]);
+      const [userData, collData, packsData] = await Promise.all([
+        userRes.json(), collRes.json(), packsRes.json(),
+      ]);
       if (userData.success) setUser(userData.data);
       if (collData.success) setUserCards(collData.data);
-      if (packsData.success) {
-        setPacks(packsData.data);
-        // Flatten all cards from packs for craft tab
-        const cards: any[] = [];
-        for (const pack of packsData.data) {
-          const res = await fetch(`/api/packs`); // We'll use collection API differently
-        }
-      }
-    } catch {}
+      if (packsData.success) setPacks(packsData.data);
+    } catch (err) {
+      console.error('Forge fetch error:', err);
+    }
     setLoading(false);
   }, []);
 

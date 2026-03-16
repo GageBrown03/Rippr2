@@ -162,7 +162,7 @@ export default function CollectionPage() {
       const res = await fetch('/api/coins/add', { method: 'POST' });
       const data = await res.json();
       if (data.success) {
-        setUser((prev) => prev ? { ...prev, coins: data.data.newCoins } : null);
+        setUser((prev) => prev ? { ...prev, coins: data.data.newCoins, stardustBalance: data.data.newStardustBalance, deltaEnergy: data.data.newDeltaEnergy } : null);
       }
     } catch (err) {
       console.error('Failed to add balance:', err);
@@ -209,7 +209,7 @@ export default function CollectionPage() {
                   border: '1px solid rgba(99,102,241,0.3)',
                 }}
               >
-                + Add 5,000 🪙
+                + Add 🪙5k ✨500 ⚡3
               </button>
             </div>
           </div>

@@ -106,7 +106,7 @@ export default function PacksPage() {
     try {
       const res = await fetch('/api/coins/add', { method: 'POST' });
       const data = await res.json();
-      if (data.success) setUser((prev) => prev ? { ...prev, coins: data.data.newCoins } : null);
+      if (data.success) setUser((prev) => prev ? { ...prev, coins: data.data.newCoins, stardustBalance: data.data.newStardustBalance, deltaEnergy: data.data.newDeltaEnergy } : null);
     } catch (err) { console.error('Failed to add balance:', err); }
   }
 
@@ -125,7 +125,7 @@ export default function PacksPage() {
               <button onClick={handleAddBalance}
                 className="px-4 py-2 rounded-lg font-bold text-sm transition-all hover:scale-105 active:scale-95 cursor-pointer"
                 style={{ background: 'rgba(99,102,241,0.15)', color: '#818CF8', border: '1px solid rgba(99,102,241,0.3)' }}>
-                + Add 5,000 🪙
+                + Add 🪙5k ✨500 ⚡3
               </button>
               <button onClick={handleClaimDaily} disabled={dailyClaimed}
                 className="px-4 py-2 rounded-lg font-bold text-sm transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"

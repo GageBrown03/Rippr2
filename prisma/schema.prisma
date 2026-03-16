@@ -15,6 +15,8 @@ model User {
   coins           Int           @default(1000)
   stardustBalance Int           @default(0)
   deltaEnergy     Int           @default(0)
+  luckModifier    Float         @default(0)
+  prestigedSets   String[]      @default([])
   lastDailyCoins  DateTime?
   createdAt       DateTime      @default(now())
   sessions        Session[]
@@ -31,7 +33,6 @@ model Session {
   expiresAt DateTime
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   @@index([userId])
   @@index([token])
 }
@@ -64,22 +65,21 @@ model Card {
   createdAt  DateTime   @default(now())
   pack       Pack       @relation(fields: [packId], references: [id], onDelete: Cascade)
   userCards  UserCard[]
-
   @@index([packId])
   @@index([rarity])
 }
 
 model UserCard {
-  id        String   @id @default(cuid())
-  userId    String
-  cardId    String
-  pulledAt  DateTime @default(now())
-  showcase  Boolean  @default(false)
-  grade     Int?
-  deltaType String?
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  card      Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
-
+  id          String   @id @default(cuid())
+  userId      String
+  cardId      String
+  pulledAt    DateTime @default(now())
+  showcase    Boolean  @default(false)
+  grade       Int?
+  deltaType   String?
+  isHoloBleed Boolean  @default(false)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  card        Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
   @@index([userId])
   @@index([cardId])
   @@index([showcase])
@@ -94,7 +94,6 @@ model PackOpening {
   openedAt   DateTime @default(now())
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   pack       Pack     @relation(fields: [packId], references: [id], onDelete: Cascade)
-
   @@index([userId])
   @@index([packId])
 }
@@ -110,7 +109,6 @@ model MinigameAttempt {
   creditsEarned Int
   createdAt     DateTime @default(now())
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   @@index([userId])
   @@index([gameType])
   @@index([createdAt])
@@ -120,9 +118,9 @@ model CompletedSet {
   id          String   @id @default(cuid())
   userId      String
   setName     String
+  prestiged   Boolean  @default(false)
   completedAt DateTime @default(now())
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   @@unique([userId, setName])
   @@index([userId])
 }

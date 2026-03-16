@@ -5,6 +5,8 @@ export type User = {
   coins: number;
   stardustBalance: number;
   deltaEnergy: number;
+  luckModifier: number;
+  prestigedSets: string[];
   lastDailyCoins: Date | null;
   createdAt: Date;
 };
@@ -51,6 +53,7 @@ export type UserCard = {
   showcase: boolean;
   grade: number | null;
   deltaType: string | null;
+  isHoloBleed: boolean;
 };
 
 export type PackOpening = {
@@ -78,6 +81,7 @@ export type CompletedSet = {
   id: string;
   userId: string;
   setName: string;
+  prestiged: boolean;
   completedAt: Date;
 };
 

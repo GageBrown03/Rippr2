@@ -29,7 +29,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const completedSets = await prisma.completedSet.findMany({
       where: { userId: user.id },
     });
-    const completedSetNames = new Set(completedSets.map((cs) => cs.setName));
+    const completedSetMap = new Map(completedSets.map((cs) => [cs.setName, cs]));
 
     // Build progress for each set
     const setProgress = packs.map((pack) => {
@@ -38,6 +38,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       const missingCards = pack.cards
         .filter((c) => !ownedCardIds.has(c.id))
         .map((c) => ({ id: c.id, name: c.name, rarity: c.rarity }));
+      const completed = completedSetMap.get(pack.setName);
 
       return {
         packId: pack.id,
@@ -47,8 +48,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         ownedCount,
         percentage: totalCards > 0 ? Math.round((ownedCount / totalCards) * 100) : 0,
         isComplete: ownedCount >= totalCards && totalCards > 0,
-        isVaulted: completedSetNames.has(pack.setName),
-        missingCards: missingCards.slice(0, 10), // limit for response size
+        isVaulted: !!completed,
+        isPrestiged: completed?.prestiged || false,
+        missingCards: missingCards.slice(0, 10),
       };
     });
 

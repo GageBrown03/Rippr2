@@ -7,6 +7,7 @@ import Image from 'next/image';
 export type CardRevealProps = {
   cards: Card[];
   pulledUserCardIds?: string[];
+  holoBleedFlags?: boolean[];
   onClose: () => void;
   onSellUpdate?: (newCoins: number) => void;
   onOpenAnother?: () => void;
@@ -28,7 +29,7 @@ function getStyle(rarity: string) {
   return RARITY_STYLES[rarity] || RARITY_STYLES['Common'];
 }
 
-export default function CardReveal({ cards, pulledUserCardIds, onClose, onSellUpdate, onOpenAnother }: CardRevealProps) {
+export default function CardReveal({ cards, pulledUserCardIds, holoBleedFlags, onClose, onSellUpdate, onOpenAnother }: CardRevealProps) {
   const [revealed, setRevealed] = useState<Set<number>>(new Set(cards.map((_, i) => i)));
   const [selling, setSelling] = useState(false);
   const [sellMessage, setSellMessage] = useState('');
@@ -164,14 +165,37 @@ export default function CardReveal({ cards, pulledUserCardIds, onClose, onSellUp
             {cards.map((card, index) => {
               const rs = getStyle(card.rarity);
               const isRevealed = revealed.has(index);
+              const isHoloBleed = holoBleedFlags?.[index] || false;
               return (
                 <div key={`${card.id}-${index}`} onClick={() => setRevealed((prev) => new Set(prev).add(index))}
-                  className="cursor-pointer rounded-xl p-2 transition-all duration-300 hover:scale-[1.03]"
+                  className="cursor-pointer rounded-xl p-2 transition-all duration-300 hover:scale-[1.03] relative overflow-hidden"
                   style={isRevealed
-                    ? { background: '#1a1f2e', border: `2px solid ${rs.border}`, boxShadow: `0 0 12px ${rs.glow}` }
+                    ? {
+                        background: '#1a1f2e',
+                        border: isHoloBleed ? '2px solid rgba(255,255,255,0.4)' : `2px solid ${rs.border}`,
+                        boxShadow: isHoloBleed ? '0 0 16px rgba(255,255,255,0.15), 0 0 30px rgba(168,85,247,0.1)' : `0 0 12px ${rs.glow}`,
+                      }
                     : { background: '#0f172a', border: '2px solid rgba(255,255,255,0.1)' }}>
+                  {/* Holo-bleed overlays */}
+                  {isRevealed && isHoloBleed && (
+                    <>
+                      <div className="absolute inset-0 z-10 pointer-events-none rounded-xl"
+                        style={{
+                          background: 'linear-gradient(135deg, rgba(255,0,150,0.1), rgba(0,255,255,0.1), rgba(255,255,0,0.1), rgba(150,0,255,0.1))',
+                          backgroundSize: '400% 400%',
+                          animation: 'holoBleedShift 4s ease-in-out infinite',
+                          mixBlendMode: 'overlay',
+                        }} />
+                      <div className="absolute inset-0 z-10 pointer-events-none rounded-xl"
+                        style={{
+                          background: 'linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.15) 50%, transparent 70%)',
+                          backgroundSize: '200% 200%',
+                          animation: 'holoBleedSheen 3s ease-in-out infinite',
+                        }} />
+                    </>
+                  )}
                   {isRevealed ? (
-                    <div className="text-center">
+                    <div className="text-center relative z-[1]">
                       {card.imageUrl && (
                         <div className="relative w-full aspect-[3/4] mb-1.5 rounded-lg overflow-hidden">
                           <Image src={card.imageUrl} alt={card.name} fill className="object-contain rounded" unoptimized />
@@ -179,6 +203,9 @@ export default function CardReveal({ cards, pulledUserCardIds, onClose, onSellUp
                       )}
                       <h4 className="font-bold text-[11px] truncate text-white">{card.name}</h4>
                       <p className="text-[10px] font-semibold" style={{ color: rs.label }}>{card.rarity}</p>
+                      {isHoloBleed && (
+                        <p className="text-[8px] font-bold mt-0.5" style={{ color: '#fff', textShadow: '0 0 6px rgba(168,85,247,0.8)' }}>🌈 HOLO BLEED</p>
+                      )}
                     </div>
                   ) : (
                     <div className="text-center py-6">

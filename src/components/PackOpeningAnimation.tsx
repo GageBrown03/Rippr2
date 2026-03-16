@@ -8,6 +8,7 @@ export type PackOpeningAnimationProps = {
   packImageUrl: string;
   packName: string;
   cards: Card[];
+  holoBleedFlags?: boolean[];
   onComplete: () => void;
 };
 
@@ -178,7 +179,7 @@ function ParticleBurst({ color }: { color: string }) {
   );
 }
 
-export default function PackOpeningAnimation({ packImageUrl, packName, cards, onComplete }: PackOpeningAnimationProps) {
+export default function PackOpeningAnimation({ packImageUrl, packName, cards, holoBleedFlags, onComplete }: PackOpeningAnimationProps) {
   const [stage, setStage] = useState<AnimationStage>('tear');
   const [cardStates, setCardStates] = useState<CardState[]>(cards.map(() => 'hidden'));
   const [burstIndex, setBurstIndex] = useState<number | null>(null);
@@ -330,6 +331,7 @@ export default function PackOpeningAnimation({ packImageUrl, packName, cards, on
                 const rs = getRarityStyle(card.rarity);
                 const isRarePlus = ['Rare', 'Holo Rare', 'Ultra Rare'].includes(card.rarity);
                 const isUltra = card.rarity === 'Ultra Rare';
+                const isHoloBleed = holoBleedFlags?.[i] || false;
 
                 return (
                   <div key={`${card.id}-${i}`} className="relative"
@@ -359,19 +361,42 @@ export default function PackOpeningAnimation({ packImageUrl, packName, cards, on
 
                     {state === 'revealed' && (
                       <div className="w-full h-full rounded-2xl overflow-hidden relative"
-                        style={{ animation: isUltra ? 'ultraRevealPop 0.5s ease-out backwards' : 'revealPop 0.3s ease-out backwards',
-                          border: `3px solid ${rs.border}`,
-                          boxShadow: isUltra
+                        style={{ animation: 'revealPop 0.3s ease-out backwards',
+                          border: isHoloBleed ? '3px solid rgba(255,255,255,0.5)' : `3px solid ${rs.border}`,
+                          boxShadow: isHoloBleed
+                            ? '0 0 25px rgba(255,255,255,0.2), 0 0 60px rgba(168,85,247,0.15), 0 8px 30px rgba(0,0,0,0.5)'
+                            : isUltra
                             ? `0 0 30px ${rs.glow}, 0 0 80px ${rs.glow}, 0 0 120px rgba(234,179,8,0.3), 0 8px 30px rgba(0,0,0,0.5)`
                             : isRarePlus
                               ? `0 0 25px ${rs.glow}, 0 0 60px ${rs.glow}, 0 8px 30px rgba(0,0,0,0.5)`
                               : `0 0 15px ${rs.glow}, 0 8px 30px rgba(0,0,0,0.5)` }}>
+                        {/* Holo-bleed overlays */}
+                        {isHoloBleed && (
+                          <>
+                            <div className="absolute inset-0 z-20 pointer-events-none rounded-2xl"
+                              style={{
+                                background: 'linear-gradient(135deg, rgba(255,0,150,0.1), rgba(0,255,255,0.1), rgba(255,255,0,0.1), rgba(150,0,255,0.1))',
+                                backgroundSize: '400% 400%',
+                                animation: 'holoBleedShift 4s ease-in-out infinite',
+                                mixBlendMode: 'overlay',
+                              }} />
+                            <div className="absolute inset-0 z-20 pointer-events-none rounded-2xl"
+                              style={{
+                                background: 'linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.15) 50%, transparent 70%)',
+                                backgroundSize: '200% 200%',
+                                animation: 'holoBleedSheen 3s ease-in-out infinite',
+                              }} />
+                          </>
+                        )}
                         {burstIndex === i && <ParticleBurst color={rs.border} />}
                         {card.imageUrl ? <Image src={card.imageUrl} alt={card.name} fill className="object-cover" unoptimized /> :
                           <div className="w-full h-full flex items-center justify-center" style={{ background: rs.bg }}><span className="text-white text-sm font-bold text-center px-2">{card.name}</span></div>}
-                        <div className="absolute bottom-0 inset-x-0 py-1.5 px-2 text-center" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.9))' }}>
+                        <div className="absolute bottom-0 inset-x-0 py-1.5 px-2 text-center z-30" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.9))' }}>
                           <div className="text-white text-xs sm:text-sm font-bold truncate">{card.name}</div>
                           <span className="text-[10px] sm:text-xs font-bold tracking-wider uppercase" style={{ color: rs.label }}>{card.rarity}</span>
+                          {isHoloBleed && (
+                            <div className="text-[9px] font-bold mt-0.5" style={{ color: '#fff', textShadow: '0 0 8px rgba(168,85,247,0.9)' }}>🌈 HOLO BLEED</div>
+                          )}
                         </div>
                       </div>
                     )}

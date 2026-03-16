@@ -13,6 +13,7 @@ export default function PacksPage() {
   const [packs, setPacks] = useState<Pack[]>([]);
   const [revealedCards, setRevealedCards] = useState<Card[] | null>(null);
   const [pulledUserCardIds, setPulledUserCardIds] = useState<string[]>([]);
+  const [holoBleedFlags, setHoloBleedFlags] = useState<boolean[]>([]);
   const [loading, setLoading] = useState(true);
   const [opening, setOpening] = useState(false);
   const [animatingPack, setAnimatingPack] = useState<{ pack: Pack; cards: Card[] } | null>(null);
@@ -67,6 +68,7 @@ export default function PacksPage() {
         setAnimatingPack({ pack: openedPack, cards: data.data.cards });
         setLastOpenedPack({ packId, quantity });
         setPulledUserCardIds(data.data.userCardIds || []);
+        setHoloBleedFlags(data.data.holoBleedFlags || []);
       }
       setUser((prev) => prev ? { ...prev, coins: data.data.newCoins } : null);
     } catch (err) {
@@ -171,6 +173,7 @@ export default function PacksPage() {
               packImageUrl={animatingPack.pack.imageUrl}
               packName={animatingPack.pack.name}
               cards={animatingPack.cards}
+              holoBleedFlags={holoBleedFlags}
               onComplete={handleAnimationComplete}
             />
           )}
@@ -179,7 +182,8 @@ export default function PacksPage() {
             <CardReveal
               cards={revealedCards}
               pulledUserCardIds={pulledUserCardIds}
-              onClose={() => { setRevealedCards(null); setLastOpenedPack(null); setPulledUserCardIds([]); }}
+              holoBleedFlags={holoBleedFlags}
+              onClose={() => { setRevealedCards(null); setLastOpenedPack(null); setPulledUserCardIds([]); setHoloBleedFlags([]); }}
               onSellUpdate={handleSellUpdate}
               onOpenAnother={lastOpenedPack ? handleOpenAnother : undefined}
             />

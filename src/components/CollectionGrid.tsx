@@ -50,19 +50,48 @@ export default function CollectionGrid({ userCards, onToggleShowcase }: Collecti
         const hasGrade = userCard.grade !== null && userCard.grade !== undefined;
         const hasDelta = !!userCard.deltaType;
         const deltaColor = hasDelta ? (DELTA_TYPE_COLORS[userCard.deltaType!] || '#A855F7') : '';
+        const isHoloBleed = userCard.isHoloBleed;
 
         return (
           <div
             key={userCard.id}
-            className="rounded-xl p-3 relative transition-all hover:scale-[1.02]"
+            className="rounded-xl p-3 relative transition-all hover:scale-[1.02] overflow-hidden"
             style={{
               background: '#1a1f2e',
-              border: `2px solid ${rs.border}${userCard.showcase ? '' : '55'}`,
-              boxShadow: userCard.showcase
+              border: `2px solid ${isHoloBleed ? 'rgba(255,255,255,0.4)' : rs.border + (userCard.showcase ? '' : '55')}`,
+              boxShadow: isHoloBleed
+                ? '0 0 20px rgba(255,255,255,0.15), 0 0 40px rgba(168,85,247,0.1)'
+                : userCard.showcase
                 ? `0 0 16px ${rs.glow}, 0 0 0 2px #FACC15`
                 : `0 2px 12px rgba(0,0,0,0.4)`,
             }}
           >
+            {/* Holo-Bleed overlay — covers entire card face */}
+            {isHoloBleed && (
+              <div className="absolute inset-0 z-10 pointer-events-none rounded-xl overflow-hidden"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,0,150,0.08), rgba(0,255,255,0.08), rgba(255,255,0,0.08), rgba(150,0,255,0.08), rgba(0,255,150,0.08))',
+                  backgroundSize: '400% 400%',
+                  animation: 'holoBleedShift 4s ease-in-out infinite',
+                  mixBlendMode: 'overlay',
+                }} />
+            )}
+            {isHoloBleed && (
+              <div className="absolute inset-0 z-10 pointer-events-none rounded-xl"
+                style={{
+                  background: 'linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.12) 50%, transparent 70%)',
+                  backgroundSize: '200% 200%',
+                  animation: 'holoBleedSheen 3s ease-in-out infinite',
+                }} />
+            )}
+
+            {/* Holo-Bleed badge */}
+            {isHoloBleed && (
+              <div className="absolute bottom-1.5 left-1.5 z-20 px-1.5 py-0.5 rounded-md"
+                style={{ background: 'rgba(0,0,0,0.8)', border: '1px solid rgba(255,255,255,0.3)' }}>
+                <span className="text-[8px] font-bold" style={{ color: '#fff', textShadow: '0 0 6px rgba(168,85,247,0.8)' }}>🌈 HOLO BLEED</span>
+              </div>
+            )
             {/* Showcase star */}
             {userCard.showcase && (
               <div className="absolute -top-2 -right-2 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold z-20"

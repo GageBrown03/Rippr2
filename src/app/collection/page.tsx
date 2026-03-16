@@ -192,7 +192,7 @@ export default function CollectionPage() {
   return (
     <ErrorBoundary>
       <div className="min-h-screen" style={{ background: '#0a0a15' }}>
-        <Navbar user={user} coins={user?.coins ?? 0} />
+        <Navbar user={user} coins={user?.coins ?? 0} stardust={user?.stardustBalance} />
         <main className="max-w-6xl mx-auto px-4 py-8">
           <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
             <h1 className="text-3xl font-bold text-white">My Collection</h1>

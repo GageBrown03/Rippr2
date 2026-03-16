@@ -37,7 +37,8 @@ export async function openPacks(packId: string, quantity: number): Promise<Card[
   }
 
   const totalCards = pack.cardsPerPack * quantity;
-  const cards = pack.cards as Card[];
+  // Exclude vault-exclusive cards from normal pulls
+  const cards = (pack.cards as Card[]).filter((c) => !c.vaultOnly && c.weight > 0);
 
   logger.info(`Opening ${quantity} packs of ${pack.name}, selecting ${totalCards} cards`);
 

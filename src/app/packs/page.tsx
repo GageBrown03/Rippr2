@@ -117,7 +117,7 @@ export default function PacksPage() {
   return (
     <ErrorBoundary>
       <div className="min-h-screen" style={{ background: '#0a0a15' }}>
-        <Navbar user={user} coins={user?.coins ?? 0} />
+        <Navbar user={user} coins={user?.coins ?? 0} stardust={user?.stardustBalance} />
         <main className="max-w-6xl mx-auto px-4 py-8">
           <div className="flex justify-between items-center mb-8 flex-wrap gap-3">
             <h1 className="text-3xl font-bold text-white">Open Packs</h1>

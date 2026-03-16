@@ -12,6 +12,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           select: { cards: true },
         },
         cards: {
+          where: { vaultOnly: false },
           orderBy: { weight: 'asc' },
           take: 1,
           select: { imageUrl: true, name: true, rarity: true },

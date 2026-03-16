@@ -3,6 +3,8 @@ export type User = {
   email: string;
   username: string;
   coins: number;
+  stardustBalance: number;
+  deltaEnergy: number;
   lastDailyCoins: Date | null;
   createdAt: Date;
 };
@@ -37,6 +39,7 @@ export type Card = {
   imageUrl: string;
   flavorText: string | null;
   weight: number;
+  vaultOnly: boolean;
   createdAt: Date;
 };
 
@@ -46,6 +49,8 @@ export type UserCard = {
   cardId: string;
   pulledAt: Date;
   showcase: boolean;
+  grade: number | null;
+  deltaType: string | null;
 };
 
 export type PackOpening = {
@@ -69,8 +74,15 @@ export type MinigameAttempt = {
   createdAt: Date;
 };
 
+export type CompletedSet = {
+  id: string;
+  userId: string;
+  setName: string;
+  completedAt: Date;
+};
+
 export type UserCardWithCard = UserCard & {
-  card: Card;
+  card: Card & { pack?: { setName: string } };
 };
 
 export type CollectionFilters = {

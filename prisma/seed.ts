@@ -57,6 +57,8 @@ const PACKS = [
       { name: 'Caterpie', cardNumber: '45/102', rarity: 'Common', type: 'Grass', hp: 40, imageUrl: 'https://images.pokemontcg.io/base1/45_hires.png', weight: 1.0 },
       { name: 'Diglett', cardNumber: '47/102', rarity: 'Common', type: 'Fighting', hp: 30, imageUrl: 'https://images.pokemontcg.io/base1/47_hires.png', weight: 1.0 },
       { name: 'Drowzee', cardNumber: '49/102', rarity: 'Common', type: 'Psychic', hp: 50, imageUrl: 'https://images.pokemontcg.io/base1/49_hires.png', weight: 1.0 },
+      // Vault Exclusive Reward
+      { name: 'Charizard (Vault 1st Edition)', cardNumber: 'VAULT/BS', rarity: 'Ultra Rare', type: 'Fire', hp: 120, imageUrl: 'https://images.pokemontcg.io/base1/4_hires.png', weight: 0, vaultOnly: true },
     ],
   },
 
@@ -181,6 +183,8 @@ const PACKS = [
       { name: 'Trapinch', cardNumber: '108/203', rarity: 'Common', type: 'Fighting', hp: 70, imageUrl: 'https://images.pokemontcg.io/swsh7/108_hires.png', weight: 1.0 },
       { name: 'Noibat', cardNumber: '112/203', rarity: 'Common', type: 'Dragon', hp: 60, imageUrl: 'https://images.pokemontcg.io/swsh7/112_hires.png', weight: 1.0 },
       { name: 'Shroomish', cardNumber: '10/203', rarity: 'Common', type: 'Grass', hp: 60, imageUrl: 'https://images.pokemontcg.io/swsh7/10_hires.png', weight: 1.0 },
+      // Vault Exclusive Reward
+      { name: 'Umbreon VMAX (Vault Gold)', cardNumber: 'VAULT/ES', rarity: 'Ultra Rare', type: 'Dark', hp: 310, imageUrl: 'https://images.pokemontcg.io/swsh7/215_hires.png', weight: 0, vaultOnly: true },
     ],
   },
 
@@ -224,6 +228,8 @@ const PACKS = [
       { name: 'Lileep δ', cardNumber: '52/110', rarity: 'Common', type: 'Dark', hp: 60, imageUrl: 'https://images.pokemontcg.io/ex11/52_hires.png', weight: 1.0 },
       { name: 'Anorith δ', cardNumber: '37/110', rarity: 'Common', type: 'Fighting', hp: 50, imageUrl: 'https://images.pokemontcg.io/ex11/37_hires.png', weight: 1.0 },
       { name: 'Magnemite δ', cardNumber: '54/110', rarity: 'Common', type: 'Electric', hp: 40, imageUrl: 'https://images.pokemontcg.io/ex11/54_hires.png', weight: 1.0 },
+      // Vault Exclusive Reward
+      { name: 'Gold Star Mew δ (Vault)', cardNumber: 'VAULT/HP', rarity: 'Ultra Rare', type: 'Psychic', hp: 90, imageUrl: 'https://images.pokemontcg.io/ex11/100_hires.png', weight: 0, vaultOnly: true },
     ],
   },
 
@@ -269,6 +275,8 @@ const PACKS = [
       { name: 'Marill', cardNumber: '66/111', rarity: 'Common', type: 'Water', hp: 50, imageUrl: 'https://images.pokemontcg.io/neo1/66_hires.png', weight: 1.0 },
       { name: 'Sunkern', cardNumber: '78/111', rarity: 'Common', type: 'Grass', hp: 30, imageUrl: 'https://images.pokemontcg.io/neo1/78_hires.png', weight: 1.0 },
       { name: 'Hoothoot', cardNumber: '61/111', rarity: 'Common', type: 'Normal', hp: 50, imageUrl: 'https://images.pokemontcg.io/neo1/61_hires.png', weight: 1.0 },
+      // Vault Exclusive Reward
+      { name: 'Shining Lugia (Vault)', cardNumber: 'VAULT/GS', rarity: 'Ultra Rare', type: 'Psychic', hp: 110, imageUrl: 'https://images.pokemontcg.io/neo1/9_hires.png', weight: 0, vaultOnly: true },
     ],
   },
 
@@ -315,6 +323,8 @@ const PACKS = [
       { name: 'Bidoof', cardNumber: '70/130', rarity: 'Common', type: 'Normal', hp: 50, imageUrl: 'https://images.pokemontcg.io/dp1/70_hires.png', weight: 1.0 },
       { name: 'Budew', cardNumber: '74/130', rarity: 'Common', type: 'Grass', hp: 40, imageUrl: 'https://images.pokemontcg.io/dp1/74_hires.png', weight: 1.0 },
       { name: 'Buizel', cardNumber: '72/130', rarity: 'Common', type: 'Water', hp: 60, imageUrl: 'https://images.pokemontcg.io/dp1/72_hires.png', weight: 1.0 },
+      // Vault Exclusive Reward
+      { name: 'Arceus LV.X (Vault)', cardNumber: 'VAULT/DP', rarity: 'Ultra Rare', type: 'Normal', hp: 120, imageUrl: 'https://images.pokemontcg.io/dp1/1_hires.png', weight: 0, vaultOnly: true },
     ],
   },
 
@@ -361,6 +371,8 @@ const PACKS = [
       { name: 'Bunnelby', cardNumber: '97/146', rarity: 'Common', type: 'Normal', hp: 60, imageUrl: 'https://images.pokemontcg.io/xy1/97_hires.png', weight: 1.0 },
       { name: 'Litleo', cardNumber: '18/146', rarity: 'Common', type: 'Fire', hp: 60, imageUrl: 'https://images.pokemontcg.io/xy1/18_hires.png', weight: 1.0 },
       { name: 'Skiddo', cardNumber: '16/146', rarity: 'Common', type: 'Grass', hp: 70, imageUrl: 'https://images.pokemontcg.io/xy1/16_hires.png', weight: 1.0 },
+      // Vault Exclusive Reward
+      { name: 'Mega Charizard (Vault Gold)', cardNumber: 'VAULT/XY', rarity: 'Ultra Rare', type: 'Fire', hp: 300, imageUrl: 'https://images.pokemontcg.io/xy2/69_hires.png', weight: 0, vaultOnly: true },
     ],
   },
   // ═══════════════════════════════════════════
@@ -401,6 +413,8 @@ const PACKS = [
       { name: 'Pikachu', cardNumber: '25/165', rarity: 'Common', type: 'Electric', hp: 60, imageUrl: 'https://images.pokemontcg.io/sv3pt5/25_hires.png', weight: 1.0 },
       { name: 'Gastly', cardNumber: '92/165', rarity: 'Common', type: 'Psychic', hp: 40, imageUrl: 'https://images.pokemontcg.io/sv3pt5/92_hires.png', weight: 1.0 },
       { name: 'Eevee', cardNumber: '133/165', rarity: 'Common', type: 'Normal', hp: 60, imageUrl: 'https://images.pokemontcg.io/sv3pt5/133_hires.png', weight: 1.0 },
+      // Vault Exclusive Reward
+      { name: 'Mew (Vault Illustration)', cardNumber: 'VAULT/151', rarity: 'Ultra Rare', type: 'Psychic', hp: 180, imageUrl: 'https://images.pokemontcg.io/sv3pt5/205_hires.png', weight: 0, vaultOnly: true },
     ],
   },
 
@@ -440,6 +454,8 @@ const PACKS = [
       { name: 'Koffing', cardNumber: '28/68', rarity: 'Common', type: 'Psychic', hp: 60, imageUrl: 'https://images.pokemontcg.io/sm115/28_hires.png', weight: 1.0 },
       { name: 'Geodude', cardNumber: '34/68', rarity: 'Common', type: 'Fighting', hp: 70, imageUrl: 'https://images.pokemontcg.io/sm115/34_hires.png', weight: 1.0 },
       { name: 'Ekans', cardNumber: '26/68', rarity: 'Common', type: 'Psychic', hp: 60, imageUrl: 'https://images.pokemontcg.io/sm115/26_hires.png', weight: 1.0 },
+      // Vault Exclusive Reward
+      { name: 'Shiny Charizard VSTAR (Vault)', cardNumber: 'VAULT/HF', rarity: 'Ultra Rare', type: 'Fire', hp: 280, imageUrl: 'https://images.pokemontcg.io/sm115/SV49_hires.png', weight: 0, vaultOnly: true },
     ],
   },
 
@@ -483,6 +499,7 @@ async function main() {
   console.log('Seeding database with Pokémon TCG data...');
 
   // Clear all existing data
+  await prisma.completedSet.deleteMany();
   await prisma.minigameAttempt.deleteMany();
   await prisma.userCard.deleteMany();
   await prisma.packOpening.deleteMany();
@@ -514,6 +531,7 @@ async function main() {
           hp: cardData.hp,
           imageUrl: cardData.imageUrl,
           weight: cardData.weight,
+          vaultOnly: (cardData as any).vaultOnly || false,
         },
       });
     }

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const PROTECTED_PATHS = ['/packs', '/collection'];
-const PROTECTED_API_PATHS = ['/api/packs/open', '/api/collection', '/api/coins/daily'];
+const PROTECTED_PATHS = ['/packs', '/collection', '/forge', '/vault', '/minigames'];
+const PROTECTED_API_PATHS = ['/api/packs/open', '/api/collection', '/api/coins/daily', '/api/forge', '/api/cards', '/api/vault'];
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
@@ -21,10 +21,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   if (isProtectedApi) {
     const sessionToken = request.cookies.get('session_token')?.value;
     if (!sessionToken) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
   }
 
@@ -35,8 +32,14 @@ export const config = {
   matcher: [
     '/packs/:path*',
     '/collection/:path*',
+    '/forge/:path*',
+    '/vault/:path*',
+    '/minigames/:path*',
     '/api/packs/open',
     '/api/collection/:path*',
     '/api/coins/daily',
+    '/api/forge/:path*',
+    '/api/cards/:path*',
+    '/api/vault/:path*',
   ],
 };

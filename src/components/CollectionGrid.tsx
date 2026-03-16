@@ -8,16 +8,38 @@ export type CollectionGridProps = {
   onToggleShowcase: (userCardId: string) => void;
 };
 
-const RARITY_STYLES: Record<string, { border: string; glow: string; bg: string; label: string }> = {
-  Common:       { border: '#6B7280', glow: 'rgba(107,114,128,0.2)', bg: '#1f2937', label: '#9CA3AF' },
-  Uncommon:     { border: '#22C55E', glow: 'rgba(34,197,94,0.2)',   bg: '#14532D20', label: '#4ADE80' },
-  Rare:         { border: '#3B82F6', glow: 'rgba(59,130,246,0.25)', bg: '#1E3A5F20', label: '#60A5FA' },
-  'Holo Rare':  { border: '#A855F7', glow: 'rgba(168,85,247,0.3)', bg: '#3B076420', label: '#C084FC' },
-  'Ultra Rare': { border: '#EAB308', glow: 'rgba(234,179,8,0.3)',  bg: '#42200620', label: '#FACC15' },
+const RARITY_STYLES: Record<string, { border: string; glow: string; label: string }> = {
+  Common:       { border: '#6B7280', glow: 'rgba(107,114,128,0.2)', label: '#9CA3AF' },
+  Uncommon:     { border: '#22C55E', glow: 'rgba(34,197,94,0.2)',   label: '#4ADE80' },
+  Rare:         { border: '#3B82F6', glow: 'rgba(59,130,246,0.25)', label: '#60A5FA' },
+  'Holo Rare':  { border: '#A855F7', glow: 'rgba(168,85,247,0.3)', label: '#C084FC' },
+  'Ultra Rare': { border: '#EAB308', glow: 'rgba(234,179,8,0.3)',  label: '#FACC15' },
+};
+
+const DELTA_TYPE_COLORS: Record<string, string> = {
+  Fire: '#EF4444', Water: '#3B82F6', Grass: '#22C55E', Electric: '#EAB308',
+  Psychic: '#A855F7', Fighting: '#C2410C', Dark: '#6B7280', Dragon: '#6366F1',
+  Steel: '#94A3B8', Fairy: '#EC4899',
 };
 
 function getStyle(rarity: string) {
   return RARITY_STYLES[rarity] || RARITY_STYLES['Common'];
+}
+
+function getGradeBg(grade: number): string {
+  if (grade >= 10) return 'linear-gradient(135deg, #EAB308, #F59E0B)';
+  if (grade >= 9) return 'linear-gradient(135deg, #6366F1, #818CF8)';
+  if (grade >= 7) return '#3B82F6';
+  if (grade >= 5) return '#22C55E';
+  return '#6B7280';
+}
+
+function getGradeLabel(grade: number): string {
+  if (grade >= 10) return 'GEM MINT 10';
+  if (grade >= 9) return `MINT ${grade}`;
+  if (grade >= 7) return `NM ${grade}`;
+  if (grade >= 5) return `EX ${grade}`;
+  return `${grade}`;
 }
 
 export default function CollectionGrid({ userCards, onToggleShowcase }: CollectionGridProps) {
@@ -25,6 +47,10 @@ export default function CollectionGrid({ userCards, onToggleShowcase }: Collecti
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
       {userCards.map((userCard) => {
         const rs = getStyle(userCard.card.rarity);
+        const hasGrade = userCard.grade !== null && userCard.grade !== undefined;
+        const hasDelta = !!userCard.deltaType;
+        const deltaColor = hasDelta ? (DELTA_TYPE_COLORS[userCard.deltaType!] || '#A855F7') : '';
+
         return (
           <div
             key={userCard.id}
@@ -37,25 +63,50 @@ export default function CollectionGrid({ userCards, onToggleShowcase }: Collecti
                 : `0 2px 12px rgba(0,0,0,0.4)`,
             }}
           >
+            {/* Showcase star */}
             {userCard.showcase && (
-              <div
-                className="absolute -top-2 -right-2 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold z-10"
-                style={{ background: '#FACC15', color: '#000' }}
-              >
-                ★
+              <div className="absolute -top-2 -right-2 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold z-20"
+                style={{ background: '#FACC15', color: '#000' }}>★</div>
+            )}
+
+            {/* Grade badge (PSA slab style) */}
+            {hasGrade && (
+              <div className="absolute top-1.5 right-1.5 z-20 px-1.5 py-0.5 rounded-md flex flex-col items-center"
+                style={{ background: getGradeBg(userCard.grade!), boxShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
+                <span className="text-[7px] font-bold text-white/80 leading-none tracking-wider">PSA</span>
+                <span className="text-[11px] font-black text-white leading-none">{userCard.grade}</span>
+              </div>
+            )}
+
+            {/* Delta Species badge */}
+            {hasDelta && (
+              <div className="absolute top-1.5 left-1.5 z-20 px-1.5 py-0.5 rounded-md"
+                style={{ background: 'rgba(0,0,0,0.75)', border: `1px solid ${deltaColor}60` }}>
+                <span className="text-[9px] font-bold" style={{ color: deltaColor }}>δ {userCard.deltaType}</span>
               </div>
             )}
 
             <div className="text-center">
               {userCard.card.imageUrl && (
                 <div className="relative w-full aspect-[3/4] mb-2 rounded-lg overflow-hidden">
-                  <Image
-                    src={userCard.card.imageUrl}
-                    alt={userCard.card.name}
-                    fill
-                    className="object-contain"
-                    unoptimized
-                  />
+                  {/* Delta type color overlay */}
+                  {hasDelta && (
+                    <div className="absolute inset-0 z-10 pointer-events-none rounded-lg"
+                      style={{ background: `${deltaColor}15`, mixBlendMode: 'overlay' }} />
+                  )}
+                  {/* Graded slab border effect */}
+                  {hasGrade && (
+                    <div className="absolute inset-0 z-10 pointer-events-none rounded-lg"
+                      style={{
+                        border: userCard.grade! >= 9
+                          ? '2px solid rgba(234,179,8,0.5)'
+                          : userCard.grade! >= 7
+                          ? '2px solid rgba(59,130,246,0.4)'
+                          : '2px solid rgba(107,114,128,0.3)',
+                        boxShadow: userCard.grade! >= 9 ? 'inset 0 0 12px rgba(234,179,8,0.15)' : 'none',
+                      }} />
+                  )}
+                  <Image src={userCard.card.imageUrl} alt={userCard.card.name} fill className="object-contain" unoptimized />
                 </div>
               )}
               <h4 className="font-bold text-sm truncate text-white">{userCard.card.name}</h4>
@@ -64,9 +115,9 @@ export default function CollectionGrid({ userCards, onToggleShowcase }: Collecti
               {userCard.card.hp && (
                 <p className="text-xs" style={{ color: '#64748b' }}>HP {userCard.card.hp}</p>
               )}
-              {userCard.card.flavorText && (
-                <p className="text-xs italic mt-1 line-clamp-2" style={{ color: '#64748b' }}>
-                  {userCard.card.flavorText}
+              {hasGrade && (
+                <p className="text-[10px] font-bold mt-0.5" style={{ color: userCard.grade! >= 9 ? '#FACC15' : '#60A5FA' }}>
+                  {getGradeLabel(userCard.grade!)}
                 </p>
               )}
               <p className="text-xs mt-1" style={{ color: '#475569' }}>

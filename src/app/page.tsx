@@ -50,7 +50,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen" style={{ background: '#0a0a15' }}>
-      <Navbar user={user} coins={user?.coins ?? 0} />
+      <Navbar user={user} coins={user?.coins ?? 0} stardust={user?.stardustBalance} />
 
       <main className="max-w-6xl mx-auto px-4 py-12 sm:py-16">
         {/* Hero */}

@@ -8,17 +8,20 @@ datasource db {
 }
 
 model User {
-  id             String        @id @default(cuid())
-  email          String        @unique
-  username       String        @unique
-  passwordHash   String
-  coins          Int           @default(1000)
-  lastDailyCoins DateTime?
-  createdAt      DateTime      @default(now())
-  sessions       Session[]
-  userCards      UserCard[]
-  packOpenings   PackOpening[]
+  id              String        @id @default(cuid())
+  email           String        @unique
+  username        String        @unique
+  passwordHash    String
+  coins           Int           @default(1000)
+  stardustBalance Int           @default(0)
+  deltaEnergy     Int           @default(0)
+  lastDailyCoins  DateTime?
+  createdAt       DateTime      @default(now())
+  sessions        Session[]
+  userCards       UserCard[]
+  packOpenings    PackOpening[]
   minigameAttempts MinigameAttempt[]
+  completedSets   CompletedSet[]
 }
 
 model Session {
@@ -57,6 +60,7 @@ model Card {
   imageUrl   String
   flavorText String?
   weight     Float
+  vaultOnly  Boolean    @default(false)
   createdAt  DateTime   @default(now())
   pack       Pack       @relation(fields: [packId], references: [id], onDelete: Cascade)
   userCards  UserCard[]
@@ -66,13 +70,15 @@ model Card {
 }
 
 model UserCard {
-  id       String   @id @default(cuid())
-  userId   String
-  cardId   String
-  pulledAt DateTime @default(now())
-  showcase Boolean  @default(false)
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  card     Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  userId    String
+  cardId    String
+  pulledAt  DateTime @default(now())
+  showcase  Boolean  @default(false)
+  grade     Int?
+  deltaType String?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  card      Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([cardId])
@@ -108,4 +114,15 @@ model MinigameAttempt {
   @@index([userId])
   @@index([gameType])
   @@index([createdAt])
+}
+
+model CompletedSet {
+  id          String   @id @default(cuid())
+  userId      String
+  setName     String
+  completedAt DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, setName])
+  @@index([userId])
 }

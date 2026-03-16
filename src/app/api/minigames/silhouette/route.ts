@@ -128,16 +128,49 @@ export async function GET(request: NextRequest) {
     const pokeId = getPokeApiId(selectedCard.name)!;
     const artworkUrl = getArtworkUrl(pokeId);
 
-    // Generate options (clean display names)
-    const options = generateMultipleChoiceOptions(selectedCard, mappableCards, 4);
+    // Generate options with clean display names (strip suffixes)
+    function cleanName(name: string): string {
+      return name
+        .replace(/ \(SAR\)$/i, '').replace(/ \(Alt\)$/i, '').replace(/ \(Holo\)$/i, '')
+        .replace(/ \(Shiny\)$/i, '').replace(/ \(Neo\)$/i, '').replace(/ \(Base\)$/i, '')
+        .replace(/ \(RR\)$/i, '').replace(/ \(FA\)$/i, '').replace(/ \(Full Art\)$/i, '')
+        .replace(/ \(Vault.*\)$/i, '').replace(/ VMAX$/i, '').replace(/ GX$/i, '')
+        .replace(/ EX$/i, '').replace(/ ex$/i, '').replace(/ V$/i, '')
+        .replace(/ δ$/i, '').replace(/ LV\.X$/i, '').replace(/^Mega /i, '')
+        .replace(/^M /i, '').replace(/^Dark /i, '').replace(/^Shiny /i, '')
+        .replace(/^Shining /i, '').replace(/^Gold Star /i, '')
+        .trim();
+    }
+
+    const rawOptions = generateMultipleChoiceOptions(selectedCard, mappableCards, 4);
+    const correctClean = cleanName(selectedCard.name);
+
+    // Clean all options, ensure correct answer is present and unique
+    const cleanedSet = new Set<string>();
+    cleanedSet.add(correctClean);
+    for (const opt of rawOptions) {
+      const c = cleanName(opt);
+      if (c !== correctClean) cleanedSet.add(c);
+    }
+    // If we lost options due to dedup, add more from pool
+    if (cleanedSet.size < 4) {
+      const shuffled = [...mappableCards].sort(() => Math.random() - 0.5);
+      for (const card of shuffled) {
+        if (cleanedSet.size >= 4) break;
+        const c = cleanName(card.name);
+        if (!cleanedSet.has(c)) cleanedSet.add(c);
+      }
+    }
+    const options = Array.from(cleanedSet).slice(0, 4).sort(() => Math.random() - 0.5);
 
     return NextResponse.json({
       success: true,
       data: {
         cardId: selectedCard.id,
         cardName: selectedCard.name,
-        imageUrl: artworkUrl,          // PokeAPI artwork for silhouette
-        cardImageUrl: selectedCard.imageUrl, // Card art for reveal
+        correctName: correctClean,
+        imageUrl: artworkUrl,
+        cardImageUrl: selectedCard.imageUrl,
         options,
         startTime: Date.now(),
       },

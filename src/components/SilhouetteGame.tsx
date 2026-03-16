@@ -42,6 +42,7 @@ export default function SilhouetteGame() {
     setSelectedAnswer('');
     setRevealed(false);
     setError('');
+    setIsSubmitting(false);
 
     try {
       const res = await fetch('/api/minigames/silhouette');

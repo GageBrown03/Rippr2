@@ -59,8 +59,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if answer is correct
-    const isCorrect = checkAnswer(answer, card.name);
+    // Check if answer is correct (compare against cleaned name since options are cleaned)
+    function cleanName(name: string): string {
+      return name
+        .replace(/ \(SAR\)$/i, '').replace(/ \(Alt\)$/i, '').replace(/ \(Holo\)$/i, '')
+        .replace(/ \(Shiny\)$/i, '').replace(/ \(Neo\)$/i, '').replace(/ \(Base\)$/i, '')
+        .replace(/ \(RR\)$/i, '').replace(/ \(FA\)$/i, '').replace(/ \(Full Art\)$/i, '')
+        .replace(/ \(Vault.*\)$/i, '').replace(/ VMAX$/i, '').replace(/ GX$/i, '')
+        .replace(/ EX$/i, '').replace(/ ex$/i, '').replace(/ V$/i, '')
+        .replace(/ δ$/i, '').replace(/ LV\.X$/i, '').replace(/^Mega /i, '')
+        .replace(/^M /i, '').replace(/^Dark /i, '').replace(/^Shiny /i, '')
+        .replace(/^Shining /i, '').replace(/^Gold Star /i, '')
+        .trim();
+    }
+    const cleanCardName = cleanName(card.name);
+    const isCorrect = checkAnswer(answer, card.name) || checkAnswer(answer, cleanCardName);
 
     // Calculate credits earned (only if correct)
     const creditsEarned = isCorrect ? calculateCredits(responseTime) : 0;
@@ -94,7 +107,7 @@ export async function POST(request: NextRequest) {
 
     const result: SilhouetteResult = {
       correct: isCorrect,
-      correctAnswer: card.name,
+      correctAnswer: cleanCardName,
       creditsEarned: creditsEarned,
       responseTime: responseTime,
       newCoins: newCoins,

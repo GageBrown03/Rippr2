@@ -25,9 +25,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const pack = await prisma.pack.findUnique({ where: { id: packId } });
     if (!pack) return errorResponse('Pack not found', 404);
 
+    const forgeCost = pack.cost; // 1:1 stardust to coin cost
+
     const freshUser = await prisma.user.findUnique({ where: { id: user.id } });
-    if (!freshUser || freshUser.stardustBalance < FORGE_COST) {
-      return errorResponse(`Not enough Stardust. Need ${FORGE_COST}, have ${freshUser?.stardustBalance || 0}`, 400);
+    if (!freshUser || freshUser.stardustBalance < forgeCost) {
+      return errorResponse(`Not enough Stardust. Need ${forgeCost}, have ${freshUser?.stardustBalance || 0}`, 400);
     }
 
     const cards = await openPacks(packId, 1);
@@ -35,7 +37,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const result = await prisma.$transaction(async (tx) => {
       const updatedUser = await tx.user.update({
         where: { id: user.id },
-        data: { stardustBalance: { decrement: FORGE_COST } },
+        data: { stardustBalance: { decrement: forgeCost } },
       });
 
       const userCardIds: string[] = [];
@@ -50,7 +52,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return successResponse({
       cards,
       userCardIds: result.userCardIds,
-      stardustSpent: FORGE_COST,
+      stardustSpent: forgeCost,
       newStardustBalance: result.updatedUser.stardustBalance,
       packName: pack.name,
     });

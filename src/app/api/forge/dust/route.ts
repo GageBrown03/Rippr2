@@ -27,13 +27,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     const { userCardIds } = parsed.data;
 
-    // Fetch the cards to dust (must belong to user, not showcased)
+    // Fetch the cards to dust (must belong to user, not showcased, not graded)
     const cards = await prisma.userCard.findMany({
-      where: { id: { in: userCardIds }, userId: user.id, showcase: false },
+      where: { id: { in: userCardIds }, userId: user.id, showcase: false, grade: null },
       include: { card: true },
     });
 
-    if (cards.length === 0) return errorResponse('No valid cards to dust (showcased cards are protected)', 400);
+    if (cards.length === 0) return errorResponse('No valid cards to dust (showcased and graded cards are protected)', 400);
 
     const totalStardust = cards.reduce((sum, uc) => sum + (DUST_VALUES[uc.card.rarity] || 5), 0);
 

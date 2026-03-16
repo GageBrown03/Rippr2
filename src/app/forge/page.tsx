@@ -8,7 +8,6 @@ import type { User, UserCardWithCard, Pack } from '@/types';
 
 const DUST_VALUES: Record<string, number> = { Common: 5, Uncommon: 10, Rare: 20, 'Holo Rare': 50, 'Ultra Rare': 100 };
 const CRAFT_COSTS: Record<string, number> = { Common: 10, Uncommon: 25, Rare: 60, 'Holo Rare': 150, 'Ultra Rare': 400 };
-const FORGE_COST = 200;
 
 const RARITY_COLORS: Record<string, string> = {
   Common: '#9CA3AF', Uncommon: '#4ADE80', Rare: '#60A5FA', 'Holo Rare': '#C084FC', 'Ultra Rare': '#FACC15',
@@ -50,6 +49,9 @@ export default function ForgePage() {
   useEffect(() => { fetchData(); }, [fetchData]);
 
   function toggleSelect(id: string) {
+    // Don't allow selecting graded cards
+    const uc = userCards.find((c) => c.id === id);
+    if (uc?.grade !== null && uc?.grade !== undefined) return;
     setSelected((prev) => {
       const next = new Set(prev);
       next.has(id) ? next.delete(id) : next.add(id);
@@ -58,7 +60,7 @@ export default function ForgePage() {
   }
 
   function selectAllByRarity(rarity: string) {
-    const ids = userCards.filter((uc) => uc.card.rarity === rarity && !uc.showcase).map((uc) => uc.id);
+    const ids = userCards.filter((uc) => uc.card.rarity === rarity && !uc.showcase && uc.grade === null).map((uc) => uc.id);
     setSelected((prev) => {
       const next = new Set(prev);
       ids.forEach((id) => next.add(id));
@@ -226,7 +228,7 @@ export default function ForgePage() {
 
               {/* Card grid */}
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
-                {userCards.filter((uc) => !uc.showcase).map((uc) => {
+                {userCards.filter((uc) => !uc.showcase && uc.grade === null).map((uc) => {
                   const isSelected = selected.has(uc.id);
                   const rc = RARITY_COLORS[uc.card.rarity] || '#9CA3AF';
                   const dustVal = DUST_VALUES[uc.card.rarity] || 5;
@@ -305,7 +307,7 @@ export default function ForgePage() {
             /* ═══ FORGE PACK TAB ═══ */
             <div>
               <p className="text-xs mb-4" style={{ color: '#64748b' }}>
-                Spend ✨{FORGE_COST} Stardust to forge a pack from any set.
+                Spend Stardust to forge a pack from any set. Cost = pack&apos;s coin price in Stardust.
               </p>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {packs.map((pack) => (
@@ -314,13 +316,13 @@ export default function ForgePage() {
                     <div className="text-4xl">📦</div>
                     <div className="flex-1 min-w-0">
                       <h3 className="text-white font-bold text-sm truncate">{pack.name}</h3>
-                      <p className="text-[10px]" style={{ color: '#64748b' }}>{pack.cardsPerPack} cards · ✨{FORGE_COST} Stardust</p>
+                      <p className="text-[10px]" style={{ color: '#64748b' }}>{pack.cardsPerPack} cards · ✨{pack.cost.toLocaleString()} Stardust</p>
                     </div>
                     <button onClick={() => handleForgePack(pack.id)}
-                      disabled={acting || (user?.stardustBalance ?? 0) < FORGE_COST}
+                      disabled={acting || (user?.stardustBalance ?? 0) < pack.cost}
                       className="px-4 py-2 rounded-lg text-xs font-bold cursor-pointer transition-all hover:scale-105 disabled:opacity-30 disabled:cursor-not-allowed"
                       style={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', color: '#fff' }}>
-                      Forge
+                      ✨{pack.cost}
                     </button>
                   </div>
                 ))}

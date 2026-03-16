@@ -95,6 +95,7 @@ export type SilhouetteChallenge = {
   cardId: string;
   cardName: string;
   imageUrl: string;
+  cardImageUrl?: string;
   options: string[];
   startTime: number;
 };

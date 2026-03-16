@@ -6,6 +6,7 @@ import Image from 'next/image';
 
 export type CardRevealProps = {
   cards: Card[];
+  pulledUserCardIds?: string[];
   onClose: () => void;
   onSellUpdate?: (newCoins: number) => void;
   onOpenAnother?: () => void;
@@ -27,24 +28,34 @@ function getStyle(rarity: string) {
   return RARITY_STYLES[rarity] || RARITY_STYLES['Common'];
 }
 
-export default function CardReveal({ cards, onClose, onSellUpdate, onOpenAnother }: CardRevealProps) {
+export default function CardReveal({ cards, pulledUserCardIds, onClose, onSellUpdate, onOpenAnother }: CardRevealProps) {
   const [revealed, setRevealed] = useState<Set<number>>(new Set(cards.map((_, i) => i)));
   const [selling, setSelling] = useState(false);
   const [sellMessage, setSellMessage] = useState('');
+  const [soldAll, setSoldAll] = useState(false);
 
   const rarityCounts: Record<string, number> = {};
   cards.forEach((card) => { rarityCounts[card.rarity] = (rarityCounts[card.rarity] || 0) + 1; });
 
-  // Total value of all cards
   const totalValue = cards.reduce((sum, c) => sum + (SELL_VALUES[c.rarity] || 0), 0);
 
-  async function handleSellRarity(rarity: string) {
-    if (selling) return;
+  // Build a map of userCardIds grouped by rarity for per-rarity selling of ONLY pulled cards
+  const idsByRarity: Record<string, string[]> = {};
+  if (pulledUserCardIds && pulledUserCardIds.length === cards.length) {
+    cards.forEach((card, i) => {
+      if (!idsByRarity[card.rarity]) idsByRarity[card.rarity] = [];
+      idsByRarity[card.rarity].push(pulledUserCardIds[i]);
+    });
+  }
+
+  async function handleSellByRarity(rarity: string) {
+    if (selling || soldAll) return;
     setSelling(true); setSellMessage('');
+    const ids = idsByRarity[rarity];
     try {
       const res = await fetch('/api/collection/sell', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rarity }),
+        body: JSON.stringify({ rarity, ...(ids ? { userCardIds: ids } : {}) }),
       });
       const data = await res.json();
       if (data.success) {
@@ -55,19 +66,18 @@ export default function CardReveal({ cards, onClose, onSellUpdate, onOpenAnother
     finally { setSelling(false); }
   }
 
-  async function handleSellAll() {
-    if (selling) return;
+  async function handleSellAllPulled() {
+    if (selling || soldAll || !pulledUserCardIds?.length) return;
     setSelling(true); setSellMessage('');
+    let totalSold = 0; let totalEarned = 0; let lastCoins = 0;
     try {
-      // Sell each rarity that exists in this pull
-      let totalSold = 0;
-      let totalEarned = 0;
-      let lastCoins = 0;
-      for (const rarity of ['Common', 'Uncommon', 'Rare', 'Holo Rare', 'Ultra Rare']) {
-        if (!rarityCounts[rarity]) continue;
+      // Sell by rarity, passing only the specific pulled IDs
+      for (const rarity of Object.keys(idsByRarity)) {
+        const ids = idsByRarity[rarity];
+        if (!ids?.length) continue;
         const res = await fetch('/api/collection/sell', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ rarity }),
+          body: JSON.stringify({ rarity, userCardIds: ids }),
         });
         const data = await res.json();
         if (data.success) {
@@ -78,9 +88,10 @@ export default function CardReveal({ cards, onClose, onSellUpdate, onOpenAnother
       }
       if (totalSold > 0) {
         setSellMessage(`Sold ${totalSold} cards for 🪙 ${totalEarned.toLocaleString()}`);
+        setSoldAll(true);
         if (onSellUpdate) onSellUpdate(lastCoins);
       } else {
-        setSellMessage('No cards to sell (showcased cards protected)');
+        setSellMessage('No cards to sell');
       }
     } catch { setSellMessage('Failed to sell cards'); }
     finally { setSelling(false); }
@@ -91,7 +102,6 @@ export default function CardReveal({ cards, onClose, onSellUpdate, onOpenAnother
       {/* Sticky header */}
       <div className="sticky top-0 z-10 px-4 pt-4 pb-3" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.95) 70%, transparent)' }}>
         <div className="max-w-6xl mx-auto">
-          {/* Top row: title + actions */}
           <div className="flex justify-between items-center mb-3 flex-wrap gap-2">
             <h2 className="text-xl font-bold text-white">Pack Results ({cards.length} cards)</h2>
             <div className="flex gap-2 flex-wrap">
@@ -104,7 +114,7 @@ export default function CardReveal({ cards, onClose, onSellUpdate, onOpenAnother
                 <button onClick={onOpenAnother}
                   className="px-3 py-1.5 rounded-lg text-xs font-bold transition-all hover:scale-105 cursor-pointer"
                   style={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', color: '#fff', boxShadow: '0 2px 12px rgba(99,102,241,0.3)' }}>
-                  Open Another 🎴
+                  Open Again 🎴
                 </button>
               )}
               <button onClick={onClose}
@@ -114,29 +124,36 @@ export default function CardReveal({ cards, onClose, onSellUpdate, onOpenAnother
               </button>
             </div>
           </div>
-
           {/* Sell bar */}
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[10px] font-semibold" style={{ color: '#64748b' }}>Sell:</span>
-            {['Common', 'Uncommon', 'Rare'].map((rarity) => {
-              const count = rarityCounts[rarity] || 0;
-              const value = SELL_VALUES[rarity] || 0;
-              const rs = getStyle(rarity);
-              return (
-                <button key={rarity} onClick={() => handleSellRarity(rarity)} disabled={selling || count === 0}
-                  className="px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-all hover:scale-105 active:scale-95 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
-                  style={{ background: `${rs.border}20`, color: rs.label, border: `1px solid ${rs.border}40` }}>
-                  {rarity} ({count}) · 🪙 {(count * value).toLocaleString()}
-                </button>
-              );
-            })}
-            <button onClick={handleSellAll} disabled={selling}
-              className="px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all hover:scale-105 active:scale-95 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
-              style={{ background: 'rgba(239,68,68,0.15)', color: '#FCA5A5', border: '1px solid rgba(239,68,68,0.3)' }}>
-              Sell All · 🪙 {totalValue.toLocaleString()}
-            </button>
-            {sellMessage && <span className="text-[10px] font-medium ml-auto" style={{ color: '#4ADE80' }}>{sellMessage}</span>}
-          </div>
+          {!soldAll ? (
+            <div className="flex flex-wrap items-center gap-2">
+              {pulledUserCardIds && pulledUserCardIds.length > 0 && (
+                <>
+                  <button onClick={handleSellAllPulled} disabled={selling}
+                    className="px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all hover:scale-105 active:scale-95 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                    style={{ background: 'rgba(239,68,68,0.15)', color: '#FCA5A5', border: '1px solid rgba(239,68,68,0.3)' }}>
+                    Sell All Pulled · 🪙 {totalValue.toLocaleString()}
+                  </button>
+                  <span className="text-white/20">|</span>
+                </>
+              )}
+              {['Common', 'Uncommon', 'Rare'].map((rarity) => {
+                const count = rarityCounts[rarity] || 0;
+                const value = SELL_VALUES[rarity] || 0;
+                const rs = getStyle(rarity);
+                return (
+                  <button key={rarity} onClick={() => handleSellByRarity(rarity)} disabled={selling || count === 0}
+                    className="px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-all hover:scale-105 active:scale-95 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                    style={{ background: `${rs.border}20`, color: rs.label, border: `1px solid ${rs.border}40` }}>
+                    {rarity} ({count}) · 🪙 {(count * value).toLocaleString()}
+                  </button>
+                );
+              })}
+              {sellMessage && <span className="text-[10px] font-medium ml-auto" style={{ color: '#4ADE80' }}>{sellMessage}</span>}
+            </div>
+          ) : (
+            <div className="text-[11px] font-medium" style={{ color: '#4ADE80' }}>{sellMessage}</div>
+          )}
         </div>
       </div>
 

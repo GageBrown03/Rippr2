@@ -12,6 +12,7 @@ export default function PacksPage() {
   const [user, setUser] = useState<User | null>(null);
   const [packs, setPacks] = useState<Pack[]>([]);
   const [revealedCards, setRevealedCards] = useState<Card[] | null>(null);
+  const [pulledUserCardIds, setPulledUserCardIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [opening, setOpening] = useState(false);
   const [animatingPack, setAnimatingPack] = useState<{ pack: Pack; cards: Card[] } | null>(null);
@@ -65,6 +66,7 @@ export default function PacksPage() {
       if (openedPack) {
         setAnimatingPack({ pack: openedPack, cards: data.data.cards });
         setLastOpenedPack({ packId, quantity });
+        setPulledUserCardIds(data.data.userCardIds || []);
       }
       setUser((prev) => prev ? { ...prev, coins: data.data.newCoins } : null);
     } catch (err) {
@@ -176,7 +178,8 @@ export default function PacksPage() {
           {revealedCards && (
             <CardReveal
               cards={revealedCards}
-              onClose={() => { setRevealedCards(null); setLastOpenedPack(null); }}
+              pulledUserCardIds={pulledUserCardIds}
+              onClose={() => { setRevealedCards(null); setLastOpenedPack(null); setPulledUserCardIds([]); }}
               onSellUpdate={handleSellUpdate}
               onOpenAnother={lastOpenedPack ? handleOpenAnother : undefined}
             />

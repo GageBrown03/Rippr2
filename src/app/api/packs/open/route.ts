@@ -40,20 +40,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Open packs (weighted random selection)
     const cards = await openPacks(packId, quantity);
 
-    // Generate AI descriptions for cards missing flavor text (limit to avoid rate limits)
+    // Fire-and-forget: generate AI descriptions in background (don't block response)
     const cardsNeedingText = cards.filter((c) => !c.flavorText).slice(0, 3);
-    for (const card of cardsNeedingText) {
-      try {
-        const description = await generateCardDescription(card.name, card.type);
-        await prisma.card.update({
-          where: { id: card.id },
-          data: { flavorText: description },
-        });
-        card.flavorText = description;
-      } catch (error) {
-        logger.error('Failed to generate AI description', { error, cardId: card.id });
-        // Non-critical, continue
-      }
+    if (cardsNeedingText.length > 0) {
+      Promise.allSettled(
+        cardsNeedingText.map(async (card) => {
+          try {
+            const description = await generateCardDescription(card.name, card.type);
+            await prisma.card.update({ where: { id: card.id }, data: { flavorText: description } });
+          } catch {}
+        })
+      ).catch(() => {});
     }
 
     // Deduct coins and create records in a transaction
@@ -74,22 +71,27 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         },
       });
 
-      // Create user cards
-      await tx.userCard.createMany({
-        data: cards.map((card) => ({
-          userId: user.id,
-          cardId: card.id,
-        })),
-      });
+      // Create user cards individually to capture IDs
+      const userCardIds: string[] = [];
+      for (const card of cards) {
+        const uc = await tx.userCard.create({
+          data: {
+            userId: user.id,
+            cardId: card.id,
+          },
+        });
+        userCardIds.push(uc.id);
+      }
 
-      return updatedUser;
+      return { updatedUser, userCardIds };
     });
 
     logger.info(`User ${user.username} opened ${quantity} packs of ${pack.name}`);
 
     return successResponse({
       cards,
-      newCoins: result.coins,
+      userCardIds: result.userCardIds,
+      newCoins: result.updatedUser.coins,
     });
   } catch (error) {
     logger.error('Pack opening error', { error });

@@ -30,6 +30,7 @@ export default function CollectionPage() {
   const [filters, setFilters] = useState<FilterType>({ sortBy: 'newest' });
   const [selling, setSelling] = useState(false);
   const [sellMessage, setSellMessage] = useState('');
+  const [showSellAllDialog, setShowSellAllDialog] = useState(false);
 
   const fetchUser = useCallback(async () => {
     try {
@@ -120,6 +121,42 @@ export default function CollectionPage() {
     }
   }
 
+  async function handleSellAll() {
+    if (selling) return;
+    setSelling(true);
+    setSellMessage('');
+    setShowSellAllDialog(false);
+    let totalSold = 0; let totalEarned = 0; let lastCoins = 0;
+    try {
+      for (const rarity of ['Common', 'Uncommon', 'Rare', 'Holo Rare', 'Ultra Rare']) {
+        const res = await fetch('/api/collection/sell', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ rarity }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          totalSold += data.data.cardsSold;
+          totalEarned += data.data.coinsEarned;
+          lastCoins = data.data.newCoins;
+        }
+      }
+      if (totalSold > 0) {
+        setSellMessage(`Sold ${totalSold} cards for 🪙 ${totalEarned.toLocaleString()}`);
+        setUser((prev) => prev ? { ...prev, coins: lastCoins } : null);
+        fetchCollection();
+      } else {
+        setSellMessage('No cards to sell (showcased cards are protected)');
+      }
+      setTimeout(() => setSellMessage(''), 4000);
+    } catch {
+      setSellMessage('Failed to sell cards');
+      setTimeout(() => setSellMessage(''), 3000);
+    } finally {
+      setSelling(false);
+    }
+  }
+
   async function handleAddBalance() {
     try {
       const res = await fetch('/api/coins/add', { method: 'POST' });
@@ -145,6 +182,12 @@ export default function CollectionPage() {
       sellCounts[uc.card.rarity] = (sellCounts[uc.card.rarity] || 0) + 1;
     }
   });
+
+  // Total collection value (non-showcased only)
+  const totalCollectionValue = userCards
+    .filter((uc) => !uc.showcase)
+    .reduce((sum, uc) => sum + (SELL_VALUES[uc.card.rarity] || 0), 0);
+  const totalSellableCards = userCards.filter((uc) => !uc.showcase).length;
 
   return (
     <ErrorBoundary>
@@ -184,16 +227,21 @@ export default function CollectionPage() {
                   onClick={() => handleSellRarity(rarity)}
                   disabled={selling || count === 0}
                   className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:scale-105 active:scale-95 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
-                  style={{
-                    background: `${color}15`,
-                    color: color,
-                    border: `1px solid ${color}40`,
-                  }}
+                  style={{ background: `${color}15`, color: color, border: `1px solid ${color}40` }}
                 >
                   Sell All {rarity} ({count}) · 🪙 {(count * value).toLocaleString()}
                 </button>
               );
             })}
+            <span className="text-white/20">|</span>
+            <button
+              onClick={() => setShowSellAllDialog(true)}
+              disabled={selling || totalSellableCards === 0}
+              className="px-3 py-1.5 rounded-lg text-xs font-bold transition-all hover:scale-105 active:scale-95 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+              style={{ background: 'rgba(239,68,68,0.15)', color: '#FCA5A5', border: '1px solid rgba(239,68,68,0.3)' }}
+            >
+              Sell Entire Collection · 🪙 {totalCollectionValue.toLocaleString()}
+            </button>
             {sellMessage && (
               <span className="text-xs font-medium ml-auto" style={{ color: '#4ADE80' }}>{sellMessage}</span>
             )}
@@ -214,6 +262,42 @@ export default function CollectionPage() {
             />
           )}
         </main>
+
+        {/* Sell All Confirmation Dialog */}
+        {showSellAllDialog && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(6px)' }}>
+            <div className="rounded-2xl p-6 max-w-md mx-4 text-center" style={{ background: '#1a1f2e', border: '1px solid rgba(239,68,68,0.3)', boxShadow: '0 8px 40px rgba(0,0,0,0.6)' }}>
+              <div className="text-5xl mb-4">⚠️</div>
+              <h3 className="text-xl font-bold text-white mb-2">Sell Entire Collection?</h3>
+              <p className="text-sm mb-1" style={{ color: '#94a3b8' }}>
+                This will sell <span className="font-bold text-white">{totalSellableCards} cards</span> for
+              </p>
+              <p className="text-2xl font-bold mb-4" style={{ color: '#FACC15' }}>
+                🪙 {totalCollectionValue.toLocaleString()}
+              </p>
+              <p className="text-xs mb-6" style={{ color: '#64748b' }}>
+                Showcased cards ({showcaseCount}) will NOT be sold.
+                <br />This action cannot be undone.
+              </p>
+              <div className="flex gap-3 justify-center">
+                <button
+                  onClick={() => setShowSellAllDialog(false)}
+                  className="px-6 py-2.5 rounded-lg text-sm font-semibold transition-all hover:scale-105 cursor-pointer"
+                  style={{ background: 'rgba(255,255,255,0.08)', color: '#e2e8f0', border: '1px solid rgba(255,255,255,0.15)' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSellAll}
+                  className="px-6 py-2.5 rounded-lg text-sm font-bold transition-all hover:scale-105 cursor-pointer"
+                  style={{ background: 'linear-gradient(135deg, #DC2626, #B91C1C)', color: '#fff', boxShadow: '0 4px 16px rgba(220,38,38,0.3)' }}
+                >
+                  Sell Everything
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </ErrorBoundary>
   );
